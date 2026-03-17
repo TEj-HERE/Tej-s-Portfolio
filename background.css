@@ -1,6 +1,14 @@
 .hero {
   /* Animated gradient only in the hero (keeps site palette intact). */
-  background: linear-gradient(-45deg, #0f172a, #1e293b, #3b82f6, #020617);
+  background: linear-gradient(
+    -45deg,
+    #020617,
+    #0b1220,
+    #0b2b3d,
+    #123249,
+    #1b0b2b,
+    #062d22
+  );
   background-size: 400% 400%;
   animation: gradientFlow 12s ease infinite;
 }
