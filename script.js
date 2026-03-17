@@ -244,11 +244,25 @@ function initThreeBackground() {
 
   const clock = new THREE.Clock();
   const cursor = { x: 0, y: 0 };
+  const attractorNdc = new THREE.Vector2(0, 0);
+  const raycaster = new THREE.Raycaster();
+  const planeZ = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0); // z = 0 plane
+  const attractorWorld = new THREE.Vector3(0, 0, 0);
+  let hasPointer = false;
+
+  // Cursor attraction tuning (subtle, premium feel)
+  const ATTRACT_RADIUS = window.innerWidth < 680 ? 2.1 : 2.6;
+  const ATTRACT_STRENGTH = window.innerWidth < 680 ? 0.0016 : 0.0019;
+  const DRAG = 0.985;
+  const MAX_SPEED = 0.018;
+
   window.addEventListener(
-    "mousemove",
+    "pointermove",
     (e) => {
+      hasPointer = true;
       cursor.x = (e.clientX / window.innerWidth) * 2 - 1;
       cursor.y = (e.clientY / window.innerHeight) * 2 - 1;
+      attractorNdc.set(cursor.x, cursor.y);
     },
     { passive: true }
   );
@@ -261,10 +275,37 @@ function initThreeBackground() {
     camera.position.y += (-cursor.y * 0.35 - camera.position.y) * 0.03;
     camera.lookAt(0, 0, 0);
 
+    // Find world-space point under cursor on z=0 plane
+    if (hasPointer) {
+      raycaster.setFromCamera(attractorNdc, camera);
+      raycaster.ray.intersectPlane(planeZ, attractorWorld);
+    }
+
     // Update node positions with wrap/bounce
     const posAttr = points.geometry.getAttribute("position");
     for (let i = 0; i < state.nodes.length; i++) {
       const n = state.nodes[i];
+
+      // Apply subtle cursor attraction (falloff within radius)
+      if (hasPointer) {
+        const dx = attractorWorld.x - n.v.x;
+        const dy = attractorWorld.y - n.v.y;
+        const d2 = dx * dx + dy * dy;
+        const r2 = ATTRACT_RADIUS * ATTRACT_RADIUS;
+        if (d2 < r2) {
+          const d = Math.sqrt(d2) + 1e-6;
+          const t = 1 - d / ATTRACT_RADIUS; // 0..1
+          const force = ATTRACT_STRENGTH * t * t; // ease-in
+          n.vel.x += (dx / d) * force;
+          n.vel.y += (dy / d) * force;
+        }
+      }
+
+      // Mild drag so motion settles nicely
+      n.vel.multiplyScalar(DRAG);
+      const speed = n.vel.length();
+      if (speed > MAX_SPEED) n.vel.multiplyScalar(MAX_SPEED / speed);
+
       n.v.addScaledVector(n.vel, dt * 60);
 
       if (n.v.x > BOUNDS.x || n.v.x < -BOUNDS.x) n.vel.x *= -1;
