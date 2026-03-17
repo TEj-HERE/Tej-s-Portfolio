@@ -1,6 +1,7 @@
 .hero {
-  /* Subtle monochrome gradient for the whole hero */
-  background: radial-gradient(circle at 20% 0%, #1e293b, transparent 55%),
-    radial-gradient(circle at 80% 100%, #020617, transparent 60%),
-    linear-gradient(135deg, #020617, #020617);
+  /* Deep, almost-black lab / space background */
+  background:
+    radial-gradient(circle at 18% 30%, rgba(15, 118, 110, 0.12), transparent 60%),
+    radial-gradient(circle at 82% 70%, rgba(37, 99, 235, 0.10), transparent 60%),
+    #050505;
 }

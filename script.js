@@ -473,7 +473,8 @@ function setupRobotParallax() {
 
   const hero = document.querySelector(".hero");
   const robot = document.getElementById("hero-robot");
-  if (!hero || !robot) return;
+  const eyeDots = document.querySelectorAll(".hero-eye-dot");
+  if (!hero || !robot || !eyeDots.length) return;
 
   let hover = false;
   const bounds = { w: 1, h: 1 };
@@ -522,14 +523,23 @@ function setupRobotParallax() {
     current.x += (lastX - current.x) * ease;
     current.y += (lastY - current.y) * ease;
 
-    const rotateY = current.x * 26;
-    const rotateX = -current.y * 18;
-    const translateX = current.x * 16;
-    const translateY = current.y * 8;
+    const rotateY = current.x * 10;
+    const rotateX = -current.y * 6;
+    const translateX = current.x * 10;
+    const translateY = current.y * 4;
 
-    const scale = hover ? 1.04 : 1.02;
+    const scale = hover ? 1.03 : 1.0;
     robot.style.transform = `translate3d(${translateX}px, ${translateY}px, 0) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(${scale}, ${scale}, ${scale})`;
-    robot.style.filter = hover ? "brightness(1.06) saturate(1.04)" : "brightness(1.0)";
+
+    const maxEyeX = 6;
+    const maxEyeY = 4;
+    eyeDots.forEach((dot, idx) => {
+      const dir = idx === 0 ? -1 : 1;
+      const ex = clamp(current.x * maxEyeX * dir, -maxEyeX, maxEyeX);
+      const ey = clamp(-current.y * maxEyeY, -maxEyeY, maxEyeY);
+      dot.style.setProperty("--eye-x", `${ex}px`);
+      dot.style.setProperty("--eye-y", `${ey}px`);
+    });
 
     requestAnimationFrame(animate);
   }
