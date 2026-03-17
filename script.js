@@ -547,6 +547,139 @@ function setupRobotParallax() {
   animate();
 }
 
+function setupCardTilt() {
+  if (state.reduceMotion) return;
+
+  document.querySelectorAll(".card").forEach((card) => {
+    let raf = 0;
+    let tx = 0, ty = 0;
+    let cx = 0, cy = 0;
+    let mx = 50, my = 50;
+    let inside = false;
+
+    function frame() {
+      cx += (tx - cx) * 0.14;
+      cy += (ty - cy) * 0.14;
+      card.style.transform = `perspective(700px) rotateX(${cy}deg) rotateY(${cx}deg) translateY(${inside ? -7 : 0}px)`;
+      card.style.setProperty("--card-mx", `${mx}%`);
+      card.style.setProperty("--card-my", `${my}%`);
+      if (Math.abs(cx) > 0.05 || Math.abs(cy) > 0.05 || inside) {
+        raf = requestAnimationFrame(frame);
+      } else {
+        card.style.transform = "";
+        raf = 0;
+      }
+    }
+
+    card.addEventListener("mouseenter", () => {
+      inside = true;
+      if (!raf) raf = requestAnimationFrame(frame);
+    }, { passive: true });
+
+    card.addEventListener("mousemove", (e) => {
+      const r = card.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - 0.5;
+      const y = (e.clientY - r.top) / r.height - 0.5;
+      tx = x * 14;
+      ty = -y * 10;
+      mx = ((e.clientX - r.left) / r.width) * 100;
+      my = ((e.clientY - r.top) / r.height) * 100;
+    }, { passive: true });
+
+    card.addEventListener("mouseleave", () => {
+      inside = false;
+      tx = 0;
+      ty = 0;
+      if (!raf) raf = requestAnimationFrame(frame);
+    }, { passive: true });
+  });
+}
+
+function setupMagneticButtons() {
+  if (state.reduceMotion) return;
+
+  document.querySelectorAll(".btn-primary").forEach((btn) => {
+    let raf = 0;
+    let tx = 0, ty = 0;
+    let cx = 0, cy = 0;
+    let active = false;
+    const RADIUS = 90;
+
+    function frame() {
+      cx += (tx - cx) * 0.14;
+      cy += (ty - cy) * 0.14;
+      btn.style.transform = `translate(${cx}px, ${cy}px)`;
+      if (Math.abs(cx - tx) > 0.05 || Math.abs(cy - ty) > 0.05 || active) {
+        raf = requestAnimationFrame(frame);
+      } else {
+        btn.style.transform = "";
+        raf = 0;
+      }
+    }
+
+    window.addEventListener("mousemove", (e) => {
+      const r = btn.getBoundingClientRect();
+      const bx = r.left + r.width / 2;
+      const by = r.top + r.height / 2;
+      const dx = e.clientX - bx;
+      const dy = e.clientY - by;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+
+      if (dist < RADIUS) {
+        active = true;
+        const strength = (1 - dist / RADIUS) * 0.38;
+        tx = dx * strength;
+        ty = dy * strength;
+        if (!raf) raf = requestAnimationFrame(frame);
+      } else if (active) {
+        active = false;
+        tx = 0;
+        ty = 0;
+        if (!raf) raf = requestAnimationFrame(frame);
+      }
+    }, { passive: true });
+  });
+}
+
+function setupHeroTextParallax() {
+  if (state.reduceMotion) return;
+
+  const hero = document.querySelector(".hero");
+  if (!hero) return;
+
+  const layers = [
+    { sel: ".hero-kicker",  xf: 0.010, yf: 0.007 },
+    { sel: ".hero-title",   xf: 0.022, yf: 0.014 },
+    { sel: ".hero-subtitle",xf: 0.008, yf: 0.005 },
+    { sel: ".hero-cta",     xf: 0.016, yf: 0.011 },
+  ].map((l) => ({ ...l, el: document.querySelector(l.sel), cx: 0, cy: 0 }))
+   .filter((l) => l.el);
+
+  let mx = 0, my = 0;
+
+  hero.addEventListener("mousemove", (e) => {
+    const r = hero.getBoundingClientRect();
+    mx = e.clientX - r.left - r.width / 2;
+    my = e.clientY - r.top - r.height / 2;
+  }, { passive: true });
+
+  hero.addEventListener("mouseleave", () => {
+    mx = 0;
+    my = 0;
+  }, { passive: true });
+
+  function tick() {
+    for (const l of layers) {
+      l.cx += (mx * l.xf - l.cx) * 0.09;
+      l.cy += (my * l.yf - l.cy) * 0.09;
+      l.el.style.transform = `translate3d(${l.cx}px, ${l.cy}px, 0)`;
+    }
+    requestAnimationFrame(tick);
+  }
+
+  tick();
+}
+
 function main() {
   setupNavbar();
   setupReveal();
@@ -555,6 +688,9 @@ function main() {
   setYouTubeLink();
   initThreeBackground();
   setupRobotParallax();
+  setupCardTilt();
+  setupMagneticButtons();
+  setupHeroTextParallax();
 }
 
 if (document.readyState === "loading") {

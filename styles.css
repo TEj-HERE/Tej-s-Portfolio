@@ -234,13 +234,13 @@ img {
 }
 .hero-grid {
   position: relative;
-  display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  display: flex;
   gap: 32px;
   align-items: center;
 }
 .hero-content {
   text-align: left;
+  flex: 1 1 50%;
 }
 .hero-kicker {
   margin: 0 0 10px;
@@ -279,12 +279,14 @@ img {
   display: flex;
   justify-content: center;
   align-items: center;
+  flex: 1 1 50%;
 }
 .hero-robot-orbit {
   position: relative;
-  width: min(520px, 50vw);
-  min-height: 85vh;
-  border-radius: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   padding: 0;
   background: transparent;
   border: none;
@@ -295,7 +297,7 @@ img {
 .hero-robot {
   position: relative;
   width: 100%;
-  height: 100%;
+  max-width: 580px;
   border-radius: 0;
   overflow: visible;
   display: flex;
@@ -303,18 +305,29 @@ img {
   justify-content: center;
   transform-style: preserve-3d;
   will-change: transform;
-  transition: transform 220ms ease-out, box-shadow 220ms ease-out, filter 220ms ease-out;
-  background-image: url("./Gemini_Generated_Image_2rptfy2rptfy2rpt.png");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-color: #ffffff;
+  transition: transform 220ms ease-out;
+}
+.hero-robot img {
+  width: 100%;
+  height: auto;
+  max-height: 600px;
+  object-fit: contain;
+  mix-blend-mode: screen;
+  filter: brightness(1.1) contrast(1.2);
   border: none;
   box-shadow: none;
-  mix-blend-mode: luminosity;
-  filter: brightness(1.35) contrast(1.4) saturate(0);
+  background: transparent;
+  border-radius: 0;
 }
-/* Robot eyes and glow removed for a cleaner floating look */
+.hero-robot::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, rgba(0, 255, 136, 0.08), transparent 65%);
+  z-index: -1;
+  pointer-events: none;
+}
 
 .btn {
   display: inline-flex;
@@ -513,10 +526,30 @@ img {
   background: rgba(255, 255, 255, 0.03);
   overflow: hidden;
   box-shadow: 0 18px 55px rgba(0, 0, 0, 0.35);
-  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+  transform-style: preserve-3d;
+  will-change: transform;
+  position: relative;
+}
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    circle at var(--card-mx, 50%) var(--card-my, 50%),
+    rgba(255, 255, 255, 0.07) 0%,
+    transparent 55%
+  );
+  opacity: 0;
+  transition: opacity 300ms ease;
+  pointer-events: none;
+  z-index: 1;
+}
+.card:hover::before {
+  opacity: 1;
 }
 .card:hover {
-  transform: translateY(-6px);
   border-color: rgba(0, 255, 136, 0.35);
   box-shadow:
     0 22px 70px rgba(0, 0, 0, 0.45),
@@ -733,18 +766,16 @@ img {
   .hero-inner {
     padding-top: 96px;
   }
-  .hero-grid {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 28px;
-  }
   .hero-content {
+    max-width: 100%;
     text-align: center;
   }
   .hero-cta {
     justify-content: center;
   }
-  .hero-robot-orbit {
-    margin-top: 4px;
+  .hero-robot {
+    width: 320px;
+    max-width: 70vw;
   }
   .timeline::before {
     left: 14px;
