@@ -468,6 +468,75 @@ function setupHeroButton() {
   });
 }
 
+function setupRobotParallax() {
+  if (state.reduceMotion) return;
+
+  const hero = document.querySelector(".hero");
+  const robot = document.getElementById("hero-robot");
+  if (!hero || !robot) return;
+
+  let hover = false;
+  const bounds = { w: 1, h: 1 };
+  let lastX = 0;
+  let lastY = 0;
+
+  function updateBounds() {
+    const rect = hero.getBoundingClientRect();
+    bounds.w = rect.width || window.innerWidth;
+    bounds.h = rect.height || window.innerHeight;
+  }
+  updateBounds();
+  window.addEventListener("resize", updateBounds, { passive: true });
+
+  hero.addEventListener(
+    "pointerenter",
+    () => {
+      hover = true;
+    },
+    { passive: true }
+  );
+  hero.addEventListener(
+    "pointerleave",
+    () => {
+      hover = false;
+    },
+    { passive: true }
+  );
+
+  hero.addEventListener(
+    "pointermove",
+    (e) => {
+      const rect = hero.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / bounds.w - 0.5;
+      const y = (e.clientY - rect.top) / bounds.h - 0.5;
+      lastX = clamp(x, -0.7, 0.7);
+      lastY = clamp(y, -0.7, 0.7);
+    },
+    { passive: true }
+  );
+
+  const current = { x: 0, y: 0 };
+
+  function animate() {
+    const ease = 0.12;
+    current.x += (lastX - current.x) * ease;
+    current.y += (lastY - current.y) * ease;
+
+    const rotateY = current.x * 26;
+    const rotateX = -current.y * 18;
+    const translateX = current.x * 16;
+    const translateY = current.y * 8;
+
+    const scale = hover ? 1.04 : 1.02;
+    robot.style.transform = `translate3d(${translateX}px, ${translateY}px, 0) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(${scale}, ${scale}, ${scale})`;
+    robot.style.filter = hover ? "brightness(1.06) saturate(1.04)" : "brightness(1.0)";
+
+    requestAnimationFrame(animate);
+  }
+
+  animate();
+}
+
 function main() {
   setupNavbar();
   setupReveal();
@@ -475,6 +544,7 @@ function main() {
   setFooterYear();
   setYouTubeLink();
   initThreeBackground();
+  setupRobotParallax();
 }
 
 if (document.readyState === "loading") {
