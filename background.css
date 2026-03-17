@@ -1,27 +1,6 @@
 .hero {
-  /* Animated gradient only in the hero (keeps site palette intact). */
-  background: linear-gradient(
-    -45deg,
-    #020617,
-    #0b1220,
-    #0b2b3d,
-    #123249,
-    #1b0b2b,
-    #062d22
-  );
-  background-size: 400% 400%;
-  animation: gradientFlow 12s ease infinite;
-}
-
-/* This defines how the gradient moves */
-@keyframes gradientFlow {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+  /* Subtle monochrome gradient for the whole hero */
+  background: radial-gradient(circle at 20% 0%, #1e293b, transparent 55%),
+    radial-gradient(circle at 80% 100%, #020617, transparent 60%),
+    linear-gradient(135deg, #020617, #020617);
 }
