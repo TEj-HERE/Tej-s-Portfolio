@@ -1,0 +1,19 @@
+.hero {
+  /* Animated gradient only in the hero (keeps site palette intact). */
+  background: linear-gradient(-45deg, #0f172a, #1e293b, #3b82f6, #020617);
+  background-size: 400% 400%;
+  animation: gradientFlow 12s ease infinite;
+}
+
+/* This defines how the gradient moves */
+@keyframes gradientFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
