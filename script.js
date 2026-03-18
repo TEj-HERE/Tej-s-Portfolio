@@ -910,6 +910,10 @@ function setupCardTilt() {
     let inside = false;
 
     function frame() {
+      if (card.classList.contains("card-fly-out")) {
+        raf = requestAnimationFrame(frame);
+        return;
+      }
       cx += (tx - cx) * 0.14;
       cy += (ty - cy) * 0.14;
       card.style.transform = `perspective(700px) rotateX(${cy}deg) rotateY(${cx}deg) translateY(${inside ? -7 : 0}px)`;
@@ -1054,7 +1058,7 @@ function setupCustomCursor() {
   // Hover state: expand ring on interactive elements
   document.addEventListener("pointerover", (e) => {
     if (e.target.closest("a, button, .btn, .card, [role='button']")) {
-      scale = 1.9;
+      scale = 1.35;
       ring.classList.add("is-hover");
       dot.classList.add("is-hover");
     }
@@ -1079,6 +1083,217 @@ function setupCustomCursor() {
     requestAnimationFrame(tick);
   }
   tick();
+}
+
+const PROJECT_OVERLAYS = {
+  rocket: {
+    title: "Rocket Flight Computer PCB",
+    desc: "Custom flight-computer PCB designed from scratch for the Arbalest Rocketry Team at York University — avionics, sensor integration (IMU, barometer, GPS), and control systems for competitive rocketry.",
+    images: [
+      { src: "./images/rocket-pcb-1.png", alt: "Rocket PCB schematic" },
+      { src: "./images/rocket-pcb-3d.png", alt: "3D render of rocket flight computer PCB" },
+      { src: "./images/rocket-pcb-2.png", alt: "Reviewing rocket PCB schematic" },
+      { src: "./images/rocket-pcb-layout.png", alt: "Rocket PCB layout" },
+    ],
+    takeaways: [
+      "Coordinated design reviews with the electrical hardware team to validate schematics and layouts",
+      "Designed for high-vibration, low-noise environments — stable power regulation under flight conditions",
+      "Drove cross-subteam integration (avionics, propulsion, software) for system-level compatibility and safety compliance",
+      "Expanded skills independently: learned SolidWorks and 3D printing for functional components",
+    ],
+    tags: ["Altium", "KiCad", "Embedded C", "Soldering"],
+  },
+  "solar-car": {
+    title: "Solar Car Electrical Systems",
+    desc: "BMS, motor test rigs, and power distribution for two solar race vehicles (Elyse & Hades) competing at the Formula Sun Grand Prix at the University of Calgary.",
+    images: [{ src: "./images/solar-car-1.png", alt: "Solar car team" }],
+    slideshow: false,
+    takeaways: [
+      "Contributed to electrical system design and verification for solar-powered race vehicles",
+      "Conducted rigorous performance testing and data analysis to optimize vehicle efficiency",
+      "Collaborated within a multidisciplinary engineering team to meet stringent technical and safety standards",
+    ],
+    tags: ["BMS", "Motor Control", "Power Systems"],
+  },
+  "ai-desk-robot": {
+    title: "AI Desk Robot",
+    desc: "PyTorch-powered robot arm that passively detects user distraction and inactivity using computer vision and ML inference on edge hardware.",
+    images: null,
+    takeaways: [
+      "Applied PyTorch and OpenCV for real-time computer vision on Raspberry Pi",
+      "Edge ML inference for low-latency distraction detection",
+    ],
+    tags: ["PyTorch", "OpenCV", "Raspberry Pi"],
+  },
+  "dc-dc-servo": {
+    title: "DC-DC Servo Power Board",
+    desc: "Custom PCB delivering stable, low-noise voltage regulation to servo actuators under high-vibration rocket flight conditions for the Arbalest Rocketry Team.",
+    images: [{ src: "./images/rocket-pcb-2.png", alt: "DC-DC servo power board schematic" }],
+    takeaways: [
+      "Engineered power regulation for harsh flight environments",
+      "Designed for low-noise output critical for servo control",
+    ],
+    tags: ["PCB Design", "Power Electronics", "Altium", "Soldering"],
+  },
+  jetech: {
+    title: "JETech Labs",
+    desc: "Founded a robotics STEAM education startup — built the full product, curriculum, and subscription model from scratch to deliver hands-on electronics kits to youth learners.",
+    images: [{ src: "./images/jetech-1.png", alt: "Building the JetBox robotic arm kit" }],
+    slideshow: false,
+    takeaways: [
+      "End-to-end operations: product design, component sourcing, video curriculum, digital marketing",
+      "Produced step-by-step video tutorials reaching thousands of learners globally",
+      "Mentored beginner engineers through structured, project-based learning",
+    ],
+    tags: ["Startup", "Arduino", "Curriculum Design"],
+  },
+  "6dof-arm": {
+    title: "6-DOF Robotic Arm",
+    desc: "3D-printed 6-degree-of-freedom robotic arm integrated with OpenCV for real-time computer vision and autonomous object detection and manipulation.",
+    images: null,
+    takeaways: [
+      "Full mechanical design and 3D printing of articulated arm",
+      "OpenCV integration for real-time vision and object manipulation",
+    ],
+    tags: ["Python", "OpenCV", "3D Printing"],
+  },
+};
+
+function setupProjectOverlays() {
+  const overlay = document.getElementById("project-overlay");
+  const closeBtn = overlay?.querySelector(".project-overlay-close");
+  const backdrop = overlay?.querySelector(".project-overlay-backdrop");
+  const slidesContainer = document.getElementById("project-overlay-slides");
+  const titleEl = document.getElementById("project-overlay-title");
+  const descEl = document.getElementById("project-overlay-desc");
+  const takeawaysEl = document.getElementById("project-overlay-takeaways");
+  const highlightsEl = document.getElementById("project-overlay-highlights");
+  const tagsEl = document.getElementById("project-overlay-tags");
+  const contentEl = overlay?.querySelector(".project-overlay-content");
+
+  if (!overlay || !titleEl || !slidesContainer) return;
+
+  let overlaySlideTimer = null;
+
+  const populateOverlay = (id) => {
+    const data = PROJECT_OVERLAYS[id];
+    if (!data) return;
+    titleEl.textContent = data.title;
+    titleEl.id = "project-overlay-title";
+    descEl.textContent = data.desc;
+    const images = data.images;
+    if (images?.length) {
+      contentEl?.classList.remove("has-no-image");
+      slidesContainer.innerHTML = "";
+      images.forEach((img, i) => {
+        const slide = document.createElement("div");
+        slide.className = "project-overlay-slide" + (i === 0 ? " active" : "");
+        const imgEl = document.createElement("img");
+        imgEl.src = img.src;
+        imgEl.alt = img.alt || data.title;
+        slide.appendChild(imgEl);
+        slidesContainer.appendChild(slide);
+      });
+    } else {
+      contentEl?.classList.add("has-no-image");
+      slidesContainer.innerHTML = "";
+    }
+    highlightsEl.innerHTML = "";
+    if (data.takeaways?.length) {
+      data.takeaways.forEach((t) => {
+        const li = document.createElement("li");
+        li.textContent = t;
+        highlightsEl.appendChild(li);
+      });
+      takeawaysEl.style.display = "";
+    } else {
+      takeawaysEl.style.display = "none";
+    }
+    tagsEl.innerHTML = "";
+    (data.tags || []).forEach((tag) => {
+      const span = document.createElement("span");
+      span.className = "tag";
+      span.textContent = tag;
+      tagsEl.appendChild(span);
+    });
+  };
+
+  let lastOpenedBtn = null;
+  let overlaySlideIdx = 0;
+
+  const advanceOverlaySlide = () => {
+    const slides = slidesContainer.querySelectorAll(".project-overlay-slide");
+    if (slides.length < 2) return;
+    slides[overlaySlideIdx].classList.remove("active");
+    overlaySlideIdx = (overlaySlideIdx + 1) % slides.length;
+    slides[overlaySlideIdx].classList.add("active");
+  };
+
+  const startOverlaySlideshow = (id) => {
+    const data = PROJECT_OVERLAYS[id];
+    if (data?.slideshow === false) return;
+    const slides = slidesContainer.querySelectorAll(".project-overlay-slide");
+    if (slides.length < 2) return;
+    overlaySlideIdx = 0;
+    slides.forEach((s, i) => s.classList.toggle("active", i === 0));
+    overlaySlideTimer = setInterval(advanceOverlaySlide, 2800);
+  };
+
+  const stopOverlaySlideshow = () => {
+    if (overlaySlideTimer) {
+      clearInterval(overlaySlideTimer);
+      overlaySlideTimer = null;
+    }
+  };
+
+  const closeOverlay = () => {
+    stopOverlaySlideshow();
+    overlay.classList.remove("is-open");
+    document.body.style.overflow = "";
+    overlay.setAttribute("aria-hidden", "true");
+    lastOpenedBtn?.focus({ preventScroll: true });
+  };
+
+  document.querySelectorAll("[data-project-overlay]").forEach((btn) => {
+    const id = btn.getAttribute("data-project-overlay");
+    if (!id || !PROJECT_OVERLAYS[id]) return;
+    const card = btn.closest("[data-overlay-card]");
+
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      lastOpenedBtn = btn;
+      populateOverlay(id);
+      overlay.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+
+      if (state.reduceMotion) {
+        overlay.classList.add("is-open");
+        startOverlaySlideshow(id);
+        requestAnimationFrame(() => closeBtn?.focus({ preventScroll: true }));
+        return;
+      }
+
+      if (card) card.classList.add("card-fly-out");
+      const onFlyOutDone = () => {
+        if (card) card.classList.remove("card-fly-out");
+        overlay.classList.add("is-open");
+        card?.removeEventListener("animationend", onFlyOutDone);
+        startOverlaySlideshow(id);
+        closeBtn?.focus({ preventScroll: true });
+      };
+      card?.addEventListener("animationend", onFlyOutDone);
+    });
+  });
+
+  closeBtn?.addEventListener("click", closeOverlay);
+  backdrop?.addEventListener("click", closeOverlay);
+
+  overlay.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && overlay.classList.contains("is-open")) {
+      closeOverlay();
+    }
+  });
 }
 
 function setupCardSlideshows() {
@@ -1153,6 +1368,7 @@ function main() {
   setupMagneticButtons();
   setupHeroTextParallax();
   setupCustomCursor();
+  setupProjectOverlays();
   setupCardSlideshows();
 }
 

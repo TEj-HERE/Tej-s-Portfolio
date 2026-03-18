@@ -587,11 +587,13 @@ img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transform: translateX(-100%);
   opacity: 0;
-  transition: opacity 550ms ease;
-  will-change: opacity;
+  transition: transform 500ms ease, opacity 450ms ease;
+  will-change: transform, opacity;
 }
 .card-slideshow .slide.active {
+  transform: translateX(0);
   opacity: 1;
 }
 .slide-dots {
@@ -650,6 +652,221 @@ img {
   font-size: 12px;
   color: rgba(255, 255, 255, 0.74);
   font-weight: 700;
+}
+
+/* Project card fly-out + overlay */
+.card[data-overlay-card].card-fly-out {
+  position: relative;
+  z-index: 2000;
+  animation: cardFlyOut 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  pointer-events: none;
+}
+@keyframes cardFlyOut {
+  0% {
+    transform: perspective(900px) translateZ(0) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: perspective(900px) translateZ(80px) translateY(-24px) scale(1.08);
+    opacity: 1;
+  }
+  100% {
+    transform: perspective(900px) translateZ(120px) translateY(-40px) scale(1.12);
+    opacity: 0;
+  }
+}
+
+.project-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.35s ease, visibility 0.35s ease;
+}
+.project-overlay.is-open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.project-overlay-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+.project-overlay.is-open .project-overlay-backdrop {
+  opacity: 1;
+}
+
+.project-overlay-panel {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  max-height: 85vh;
+  overflow-y: auto;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(14, 14, 16, 0.92);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.04),
+    0 20px 50px rgba(0, 0, 0, 0.4);
+  transform: scale(0.96) translateY(12px);
+  opacity: 0;
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.35s ease;
+}
+.project-overlay.is-open .project-overlay-panel {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
+
+.project-overlay-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.88);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+.project-overlay-close:hover {
+  background: rgba(0, 255, 136, 0.15);
+  border-color: rgba(0, 255, 136, 0.35);
+  transform: scale(1.05);
+}
+
+.project-overlay-content {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 0;
+}
+.project-overlay-content.has-no-image {
+  grid-template-columns: 1fr;
+}
+.project-overlay-content.has-no-image .project-overlay-media {
+  display: none;
+}
+@media (max-width: 520px) {
+  .project-overlay-content {
+    grid-template-columns: 1fr;
+  }
+}
+
+.project-overlay-media {
+  min-height: 120px;
+  position: relative;
+  background:
+    linear-gradient(135deg, rgba(0, 255, 136, 0.08), rgba(0, 136, 255, 0.06)),
+    rgba(255, 255, 255, 0.02);
+  border-radius: var(--radius-sm) 0 0 0;
+  overflow: hidden;
+}
+.project-overlay-slides {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 140px;
+}
+.project-overlay-slide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transform: translateX(-100%);
+  transition: transform 500ms ease, opacity 450ms ease;
+  pointer-events: none;
+}
+.project-overlay-slide.active {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+.project-overlay-slide.active ~ .project-overlay-slide {
+  transform: translateX(100%);
+}
+.project-overlay-slide img {
+  width: 100%;
+  height: 100%;
+  min-height: 140px;
+  object-fit: cover;
+  display: block;
+}
+@media (max-width: 520px) {
+  .project-overlay-media {
+    min-height: 140px;
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  }
+  .project-overlay-slide img {
+    min-height: 160px;
+  }
+}
+
+.project-overlay-body {
+  padding: 18px 44px 20px 20px;
+}
+.project-overlay-body h2 {
+  margin: 0 0 8px;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+.project-overlay-desc {
+  margin: 0 0 14px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.7);
+}
+.project-overlay-takeaways {
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+.project-overlay-takeaways-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--green);
+  margin-bottom: 8px;
+}
+.project-overlay-highlights {
+  margin: 0;
+  padding-left: 16px;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 12px;
+  line-height: 1.6;
+}
+.project-overlay-highlights li {
+  margin-bottom: 4px;
+}
+.project-overlay-body .tag-row {
+  margin-top: 0;
+  gap: 6px;
+}
+.project-overlay-body .tag {
+  font-size: 11px;
+  padding: 5px 8px;
 }
 
 /* Timeline */
@@ -1066,6 +1283,32 @@ img {
   .btn,
   .card,
   .icon-link {
+    transition: none;
+  }
+  .card-slideshow .slide {
+    transform: none;
+    transition: opacity 400ms ease;
+  }
+  .card-slideshow .slide.active {
+    transform: none;
+  }
+  .card[data-overlay-card].card-fly-out {
+    animation: none;
+    opacity: 0;
+  }
+  .project-overlay-slide {
+    transform: none;
+    transition: opacity 400ms ease;
+  }
+  .project-overlay-slide.active {
+    transform: none;
+  }
+  .project-overlay-slide.active ~ .project-overlay-slide {
+    transform: none;
+  }
+  .project-overlay,
+  .project-overlay-backdrop,
+  .project-overlay-panel {
     transition: none;
   }
   * { cursor: auto !important; }
