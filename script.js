@@ -120,12 +120,12 @@ function setFooterYear() {
 
 function setYouTubeLink() {
   // Placeholder requested: “Too Young To Learn All” (channel name). Using a YouTube search URL by default.
-  const a = document.querySelector("[data-youtube]");
-  if (!a) return;
-  a.setAttribute(
-    "href",
-    "https://www.youtube.com/results?search_query=Too%20Young%20To%20Learn%20All"
-  );
+  const url = "https://www.youtube.com/channel/UCZCSh99yfUspORSF058BZBQ";
+  document.querySelectorAll("[data-youtube]").forEach(a => {
+    a.setAttribute("href", url);
+    a.setAttribute("target", "_blank");
+    a.setAttribute("rel", "noreferrer");
+  });
 }
 
 function initThreeBackground() {
