@@ -587,7 +587,7 @@ img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transform: translateX(-100%);
+  transform: translateX(100%);
   opacity: 0;
   transition: transform 500ms ease, opacity 450ms ease;
   will-change: transform, opacity;
@@ -595,6 +595,9 @@ img {
 .card-slideshow .slide.active {
   transform: translateX(0);
   opacity: 1;
+}
+.card-slideshow .slide.active ~ .slide {
+  transform: translateX(-100%);
 }
 .slide-dots {
   position: absolute;
@@ -607,7 +610,7 @@ img {
   opacity: 0;
   transition: opacity 250ms ease;
 }
-.card-slideshow:hover .slide-dots {
+.card:hover .slide-dots {
   opacity: 1;
 }
 .slide-dot {
@@ -789,7 +792,7 @@ img {
   width: 100%;
   height: 100%;
   opacity: 0;
-  transform: translateX(-100%);
+  transform: translateX(100%);
   transition: transform 500ms ease, opacity 450ms ease;
   pointer-events: none;
 }
@@ -799,7 +802,7 @@ img {
   pointer-events: auto;
 }
 .project-overlay-slide.active ~ .project-overlay-slide {
-  transform: translateX(100%);
+  transform: translateX(-100%);
 }
 .project-overlay-slide img {
   width: 100%;
@@ -867,6 +870,117 @@ img {
 .project-overlay-body .tag {
   font-size: 11px;
   padding: 5px 8px;
+}
+
+/* Too Young To Learn All — featured */
+.tytla-featured {
+  margin-bottom: 48px;
+  padding: 32px 28px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+  box-shadow: 0 18px 55px rgba(0, 0, 0, 0.35);
+  text-align: center;
+}
+.tytla-header {
+  margin-bottom: 28px;
+}
+.tytla-title {
+  margin: 0 0 6px;
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+.tytla-subtitle {
+  margin: 0;
+  font-size: 14px;
+  color: var(--green);
+  font-weight: 600;
+}
+.tytla-charts {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+.tytla-chart {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 20px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+}
+.tytla-chart:hover {
+  transform: scale(1.08) translateY(-4px);
+  border-color: rgba(0, 255, 136, 0.35);
+  box-shadow: 0 12px 40px rgba(0, 255, 136, 0.12);
+  background: rgba(0, 255, 136, 0.06);
+}
+.tytla-chart-ring {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: conic-gradient(
+    var(--green) calc(var(--fill) * 1%),
+    rgba(255, 255, 255, 0.12) calc(var(--fill) * 1%)
+  );
+  position: relative;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.tytla-chart-ring::after {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border-radius: 50%;
+  background: var(--bg);
+}
+.tytla-chart:hover .tytla-chart-ring {
+  transform: rotate(90deg) scale(1.1);
+}
+.tytla-chart-ring-sponsors {
+  background: conic-gradient(
+    var(--green) 0deg 180deg,
+    var(--blue) 180deg 360deg
+  );
+}
+.tytla-chart-value {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+.tytla-chart-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.tytla-cta {
+  margin-top: 8px;
+}
+@media (max-width: 680px) {
+  .tytla-charts {
+    gap: 16px;
+  }
+  .tytla-chart {
+    padding: 12px 16px;
+  }
+  .tytla-chart-ring {
+    width: 56px;
+    height: 56px;
+  }
+  .tytla-chart-ring::after {
+    inset: 6px;
+  }
 }
 
 /* Timeline */
@@ -1284,6 +1398,12 @@ img {
   .card,
   .icon-link {
     transition: none;
+  }
+  .tytla-chart:hover {
+    transform: none;
+  }
+  .tytla-chart:hover .tytla-chart-ring {
+    transform: none;
   }
   .card-slideshow .slide {
     transform: none;

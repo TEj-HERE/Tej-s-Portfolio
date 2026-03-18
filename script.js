@@ -1298,6 +1298,7 @@ function setupProjectOverlays() {
 
 function setupCardSlideshows() {
   document.querySelectorAll('.card-slideshow').forEach(media => {
+    const card = media.closest('.card');
     const slides  = media.querySelectorAll('.slide');
     const dots    = media.querySelectorAll('.slide-dot');
     const btnPrev = media.querySelector('.slide-arrow-prev');
@@ -1326,11 +1327,12 @@ function setupCardSlideshows() {
       timer = null;
     }
 
-    media.addEventListener('mouseenter', () => {
+    const hoverTarget = card || media;
+    hoverTarget.addEventListener('mouseenter', () => {
       if (!userActed) startAuto();
     });
 
-    media.addEventListener('mouseleave', () => {
+    hoverTarget.addEventListener('mouseleave', () => {
       stopAuto();
       userActed = false;
       goTo(0);
