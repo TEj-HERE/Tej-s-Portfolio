@@ -495,11 +495,6 @@ function initNodeNetwork() {
   let photoImg = null;
   const photo = new Image();
   photo.onload = () => { photoImg = photo; };
-  photo.onerror = () => {
-    const alt = new Image();
-    alt.onload = () => { photoImg = alt; };
-    alt.src = "file:///C:/Users/Owner/.cursor/projects/c-Tej-s-Portfolio-Main-Tej-s-Portfolio/assets/c__Users_Owner_AppData_Roaming_Cursor_User_workspaceStorage_a0c6982950d5b80890a46ea2aa8f977b_images_profile-pic__2_-d8a9f024-8c08-4667-94ed-348fdce1b15f.png";
-  };
   photo.src = "./profile.png";
 
   const colStr = (c, a) => `rgba(${c.r},${c.g},${c.b},${Math.max(0, Math.min(1, a)).toFixed(3)})`;
