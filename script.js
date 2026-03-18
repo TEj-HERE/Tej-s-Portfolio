@@ -468,83 +468,440 @@ function setupHeroButton() {
   });
 }
 
-function setupRobotParallax() {
-  if (state.reduceMotion) return;
+function initNodeNetwork() {
+  const canvas = document.getElementById("node-canvas");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
 
-  const hero = document.querySelector(".hero");
-  const robot = document.getElementById("hero-robot");
-  const eyeDots = document.querySelectorAll(".hero-eye-dot");
-  if (!hero || !robot || !eyeDots.length) return;
+  // Palette — green / blue / teal / soft-white only
+  const C = {
+    green: { r: 0,   g: 255, b: 136 },
+    blue:  { r: 0,   g: 136, b: 255 },
+    teal:  { r: 0,   g: 210, b: 200 },
+    white: { r: 210, g: 230, b: 255 },
+  };
+  const COLS = [C.green, C.blue, C.teal, C.white];
 
-  let hover = false;
-  const bounds = { w: 1, h: 1 };
-  let lastX = 0;
-  let lastY = 0;
+  const PHOTO_R    = 115;
+  const NODE_COUNT = 62;   // 12 orbit + 35 right-cluster + 15 left-ambient
+  const LINK_DIST  = 200;
+  const PULSE_SPD  = 0.009;
 
-  function updateBounds() {
-    const rect = hero.getBoundingClientRect();
-    bounds.w = rect.width || window.innerWidth;
-    bounds.h = rect.height || window.innerHeight;
+  let W = 0, H = 0, pCX = 0, pCY = 0, t = 0;
+  let mouse = { x: null, y: null };
+  let nodes = [], edges = [];
+
+  // Load profile photo
+  let photoImg = null;
+  const photo = new Image();
+  photo.onload = () => { photoImg = photo; };
+  photo.onerror = () => {
+    const alt = new Image();
+    alt.onload = () => { photoImg = alt; };
+    alt.src = "file:///C:/Users/Owner/.cursor/projects/c-Tej-s-Portfolio-Main-Tej-s-Portfolio/assets/c__Users_Owner_AppData_Roaming_Cursor_User_workspaceStorage_a0c6982950d5b80890a46ea2aa8f977b_images_profile-pic__2_-d8a9f024-8c08-4667-94ed-348fdce1b15f.png";
+  };
+  photo.src = "./profile.png";
+
+  const colStr = (c, a) => `rgba(${c.r},${c.g},${c.b},${Math.max(0, Math.min(1, a)).toFixed(3)})`;
+  const rand   = (lo, hi) => lo + Math.random() * (hi - lo);
+
+  // ── node shape drawers ──────────────────────────────────────────────────────
+
+  function pathDiamond(x, y, s, angle) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(angle);
+    ctx.beginPath();
+    ctx.moveTo(0, -s);
+    ctx.lineTo(s * 0.65, 0);
+    ctx.lineTo(0, s);
+    ctx.lineTo(-s * 0.65, 0);
+    ctx.closePath();
+    ctx.restore();
   }
-  updateBounds();
-  window.addEventListener("resize", updateBounds, { passive: true });
 
-  hero.addEventListener(
-    "pointerenter",
-    () => {
-      hover = true;
-    },
-    { passive: true }
-  );
-  hero.addEventListener(
-    "pointerleave",
-    () => {
-      hover = false;
-    },
-    { passive: true }
-  );
+  function pathHex(x, y, s) {
+    ctx.beginPath();
+    for (let i = 0; i < 6; i++) {
+      const a = (i * Math.PI) / 3 - Math.PI / 6;
+      const px = x + Math.cos(a) * s, py = y + Math.sin(a) * s;
+      i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+    }
+    ctx.closePath();
+  }
 
-  hero.addEventListener(
-    "pointermove",
-    (e) => {
-      const rect = hero.getBoundingClientRect();
-      const x = (e.clientX - rect.left) / bounds.w - 0.5;
-      const y = (e.clientY - rect.top) / bounds.h - 0.5;
-      lastX = clamp(x, -0.7, 0.7);
-      lastY = clamp(y, -0.7, 0.7);
-    },
-    { passive: true }
-  );
+  function pathCross(x, y, s, angle) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(angle);
+    ctx.beginPath();
+    ctx.moveTo(-s * 0.22, -s);
+    ctx.lineTo(s * 0.22, -s);
+    ctx.lineTo(s * 0.22, -s * 0.22);
+    ctx.lineTo(s, -s * 0.22);
+    ctx.lineTo(s, s * 0.22);
+    ctx.lineTo(s * 0.22, s * 0.22);
+    ctx.lineTo(s * 0.22, s);
+    ctx.lineTo(-s * 0.22, s);
+    ctx.lineTo(-s * 0.22, s * 0.22);
+    ctx.lineTo(-s, s * 0.22);
+    ctx.lineTo(-s, -s * 0.22);
+    ctx.lineTo(-s * 0.22, -s * 0.22);
+    ctx.closePath();
+    ctx.restore();
+  }
 
-  const current = { x: 0, y: 0 };
+  function drawGlow(x, y, radius, col, alpha) {
+    const g = ctx.createRadialGradient(x, y, 0, x, y, radius);
+    g.addColorStop(0, colStr(col, alpha));
+    g.addColorStop(1, colStr(col, 0));
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, Math.PI * 2);
+    ctx.fillStyle = g;
+    ctx.fill();
+  }
 
-  function animate() {
-    const ease = 0.12;
-    current.x += (lastX - current.x) * ease;
-    current.y += (lastY - current.y) * ease;
+  // ── node renderer ───────────────────────────────────────────────────────────
 
-    const rotateY = current.x * 10;
-    const rotateX = -current.y * 6;
-    const translateX = current.x * 10;
-    const translateY = current.y * 4;
+  function drawNode(n) {
+    const col   = COLS[n.colorIdx];
+    const pulse = 0.6 + 0.4 * Math.sin(t * 0.028 + n.pphs);
+    const lit   = (n.baseLit ?? 1) * (n.lit ?? 1);
+    const s     = n.size * (0.9 + 0.1 * pulse) * Math.min(lit, 1.6);
 
-    const scale = hover ? 1.03 : 1.0;
-    robot.style.transform = `translate3d(${translateX}px, ${translateY}px, 0) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(${scale}, ${scale}, ${scale})`;
+    // Soft glow behind
+    drawGlow(n.x, n.y, s * 7, col, 0.22 * pulse * lit);
 
-    const maxEyeX = 6;
-    const maxEyeY = 4;
-    eyeDots.forEach((dot, idx) => {
-      const dir = idx === 0 ? -1 : 1;
-      const ex = clamp(current.x * maxEyeX * dir, -maxEyeX, maxEyeX);
-      const ey = clamp(-current.y * maxEyeY, -maxEyeY, maxEyeY);
-      dot.style.setProperty("--eye-x", `${ex}px`);
-      dot.style.setProperty("--eye-y", `${ey}px`);
+    ctx.save();
+    if (n.shape === 0) {
+      // Diamond — hollow with bright fill
+      pathDiamond(n.x, n.y, s * 1.3, n.angle);
+      ctx.strokeStyle = colStr(col, 0.9 * lit);
+      ctx.lineWidth   = 1.4;
+      ctx.stroke();
+      pathDiamond(n.x, n.y, s * 0.55, n.angle + Math.PI / 4);
+      ctx.fillStyle = colStr(col, 0.6 * lit);
+      ctx.fill();
+    } else if (n.shape === 1) {
+      // Hexagon outline + inner dot
+      pathHex(n.x, n.y, s * 1.4);
+      ctx.strokeStyle = colStr(col, 0.8 * lit);
+      ctx.lineWidth   = 1.2;
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, s * 0.45, 0, Math.PI * 2);
+      ctx.fillStyle = colStr(col, 0.95 * lit);
+      ctx.fill();
+    } else if (n.shape === 2) {
+      // Plus/cross shape
+      pathCross(n.x, n.y, s * 1.1, n.angle);
+      ctx.fillStyle = colStr(col, 0.75 * lit);
+      ctx.fill();
+    } else {
+      // Simple bright circle (small nodes)
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, s, 0, Math.PI * 2);
+      ctx.fillStyle = colStr(col, 0.9 * lit);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  // ── photo renderer ──────────────────────────────────────────────────────────
+
+  function drawPhoto() {
+    const x = pCX, y = pCY, r = PHOTO_R;
+
+    // Deep ambient pool
+    drawGlow(x, y, r * 3.2, C.green, 0.055 + 0.025 * Math.sin(t * 0.022));
+    drawGlow(x, y, r * 2.0, C.blue,  0.04  + 0.02  * Math.sin(t * 0.018 + 1));
+
+    // Radar sweep arc
+    const sweep = (t * 0.014) % (Math.PI * 2);
+    const sweepLen = Math.PI * 0.65;
+    const sweepGrad = ctx.createConicalGradient
+      ? null // not standard — do it with arc instead
+      : null;
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.arc(0, 0, r + 55, sweep, sweep + sweepLen);
+    ctx.closePath();
+    const rg = ctx.createRadialGradient(0, 0, 0, 0, 0, r + 55);
+    rg.addColorStop(0, "rgba(0,255,136,0)");
+    rg.addColorStop(0.6, "rgba(0,255,136,0.07)");
+    rg.addColorStop(1, "rgba(0,255,136,0)");
+    ctx.fillStyle = rg;
+    ctx.fill();
+    ctx.restore();
+
+    // Outer thin ring (green, dashed, slow CW)
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(t * 0.006);
+    ctx.beginPath();
+    ctx.arc(0, 0, r + 50, 0, Math.PI * 2);
+    ctx.strokeStyle = colStr(C.green, 0.22 + 0.1 * Math.sin(t * 0.035));
+    ctx.lineWidth = 1;
+    ctx.setLineDash([12, 20]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.restore();
+
+    // Mid ring (blue, dashed, CCW)
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(-t * 0.010);
+    ctx.beginPath();
+    ctx.arc(0, 0, r + 28, 0, Math.PI * 2);
+    ctx.strokeStyle = colStr(C.blue, 0.3 + 0.12 * Math.sin(t * 0.03 + 1.5));
+    ctx.lineWidth = 1;
+    ctx.setLineDash([6, 24]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.restore();
+
+    // 4 diamond corner accents at cardinal points
+    const accentR = r + 60;
+    for (let i = 0; i < 4; i++) {
+      const a   = (i * Math.PI) / 2 + t * 0.006;
+      const ax  = x + Math.cos(a) * accentR;
+      const ay  = y + Math.sin(a) * accentR;
+      const col = i % 2 === 0 ? C.green : C.blue;
+      drawGlow(ax, ay, 10, col, 0.5);
+      pathDiamond(ax, ay, 5, a + Math.PI / 4);
+      ctx.fillStyle = colStr(col, 0.9);
+      ctx.fill();
+    }
+
+    // Inner solid glow border
+    const borderGlow = ctx.createRadialGradient(x, y, r - 4, x, y, r + 8);
+    borderGlow.addColorStop(0, "rgba(0,255,136,0.8)");
+    borderGlow.addColorStop(0.5, "rgba(0,255,136,0.4)");
+    borderGlow.addColorStop(1, "rgba(0,255,136,0)");
+    ctx.beginPath();
+    ctx.arc(x, y, r + 4, 0, Math.PI * 2);
+    ctx.strokeStyle = borderGlow;
+    ctx.lineWidth = 5;
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(x, y, r + 1, 0, Math.PI * 2);
+    ctx.strokeStyle = colStr(C.green, 0.85);
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Clip and draw photo
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.clip();
+    if (photoImg && photoImg.complete && photoImg.naturalWidth > 0) {
+      ctx.drawImage(photoImg, x - r, y - r, r * 2, r * 2);
+      ctx.fillStyle = `rgba(0,80,200,${0.07 + 0.03 * Math.sin(t * 0.04)})`;
+      ctx.fillRect(x - r, y - r, r * 2, r * 2);
+      for (let sy = -r; sy < r; sy += 5) {
+        ctx.fillStyle = `rgba(0,0,0,${0.06 + 0.03 * Math.sin(sy * 0.12 + t * 0.012)})`;
+        ctx.fillRect(x - r, y + sy, r * 2, 2);
+      }
+    } else {
+      const pg = ctx.createRadialGradient(x, y - r * 0.2, r * 0.1, x, y, r);
+      pg.addColorStop(0, "rgba(40,80,160,0.55)");
+      pg.addColorStop(1, "rgba(0,20,50,0.8)");
+      ctx.fillStyle = pg;
+      ctx.fillRect(x - r, y - r, r * 2, r * 2);
+    }
+    ctx.restore();
+  }
+
+  // ── build nodes ─────────────────────────────────────────────────────────────
+
+  function buildNodes() {
+    nodes = Array.from({ length: NODE_COUNT }, (_, i) => {
+      const orbiting  = i < 12;
+      const leftSide  = i >= 47;           // last 15 nodes = faint left-side ambient
+      const angle     = rand(0, Math.PI * 2);
+      const orbitDist = PHOTO_R * rand(1.7, 2.8);
+
+      let bx, by;
+      if (orbiting) {
+        bx = pCX + Math.cos(angle) * orbitDist;
+        by = pCY + Math.sin(angle) * orbitDist;
+      } else if (leftSide) {
+        // Spread across left ~40% of canvas
+        bx = rand(30, W * 0.40);
+        by = rand(30, H - 30);
+      } else {
+        // Right-side cluster around photo (original behaviour)
+        const dist = PHOTO_R * rand(2.8, 5.4);
+        bx = pCX + Math.cos(angle) * dist;
+        by = pCY + Math.sin(angle) * dist;
+      }
+
+      const shape = orbiting
+        ? (i % 3 === 0 ? 0 : i % 3 === 1 ? 1 : 3)
+        : (i % 4);
+
+      return {
+        bx, by,
+        x: 0, y: 0,
+        phase:      rand(0, Math.PI * 2),
+        orbitAngle: angle,
+        orbitR:     orbitDist,
+        orbitSpd:   rand(0.0015, 0.004) * (Math.random() < 0.5 ? 1 : -1),
+        orbiting,
+        leftSide,
+        // Left-side nodes are smaller and inherently dimmer
+        size:       orbiting ? rand(5, 9) : leftSide ? rand(2, 4) : rand(3.5, 7),
+        baseLit:    leftSide ? 0.28 : 1,   // permanent dim factor for left nodes
+        shape,
+        colorIdx:   i % 4,
+        angle:      rand(0, Math.PI * 2),
+        rotSpd:     rand(0.005, 0.02) * (Math.random() < 0.5 ? 1 : -1),
+        pphs:       rand(0, Math.PI * 2),
+        lit:        1,
+      };
     });
-
-    requestAnimationFrame(animate);
+    edges = [];
+    for (let i = 0; i < nodes.length; i++)
+      for (let j = i + 1; j < nodes.length; j++)
+        edges.push({ a: i, b: j, p1: Math.random(), p2: (Math.random() + 0.5) % 1 });
   }
 
-  animate();
+  function resize() {
+    const dpr = window.devicePixelRatio || 1;
+    W = canvas.offsetWidth  || window.innerWidth * 0.58;
+    H = canvas.offsetHeight || window.innerHeight;
+    canvas.width  = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    pCX = W * 0.72;
+    pCY = H * 0.46;
+    buildNodes();
+  }
+  resize();
+  window.addEventListener("resize", resize, { passive: true });
+
+  const heroEl = document.querySelector(".hero");
+  if (heroEl) {
+    heroEl.addEventListener("pointermove", (e) => {
+      const r = canvas.getBoundingClientRect();
+      mouse.x = e.clientX - r.left;
+      mouse.y = e.clientY - r.top;
+    }, { passive: true });
+    heroEl.addEventListener("pointerleave", () => { mouse.x = null; mouse.y = null; }, { passive: true });
+  }
+
+  // ── main loop ───────────────────────────────────────────────────────────────
+
+  function draw() {
+    t++;
+    ctx.clearRect(0, 0, W, H);
+
+    // Move nodes
+    for (const n of nodes) {
+      n.angle += n.rotSpd;
+      if (n.orbiting) {
+        n.orbitAngle += n.orbitSpd;
+        n.x = pCX + Math.cos(n.orbitAngle) * n.orbitR + Math.cos(t * 0.0006 + n.phase) * 7;
+        n.y = pCY + Math.sin(n.orbitAngle) * n.orbitR + Math.sin(t * 0.0008 + n.phase) * 7;
+      } else {
+        const ft = t * 0.00035;
+        n.x = n.bx + Math.cos(ft + n.phase) * 30;
+        n.y = n.by + Math.sin(ft * 0.69 + n.phase) * 22;
+      }
+
+      // Mouse glow-up
+      n.lit = 1;
+      if (mouse.x !== null) {
+        const dx = mouse.x - n.x, dy = mouse.y - n.y;
+        const d  = Math.sqrt(dx * dx + dy * dy);
+        if (d < 150 && d > 0) {
+          const f = (1 - d / 150) * 18;
+          n.x += dx / d * f;
+          n.y += dy / d * f;
+          n.lit = 1 + (1 - d / 150) * 0.7;
+        }
+      }
+
+      // Repel from photo
+      const pdx = n.x - pCX, pdy = n.y - pCY;
+      const pd  = Math.sqrt(pdx * pdx + pdy * pdy);
+      if (pd < PHOTO_R + 20 && pd > 0) {
+        const push = (PHOTO_R + 20 - pd) * 0.2;
+        n.x += pdx / pd * push;
+        n.y += pdy / pd * push;
+      }
+    }
+
+    // Draw gradient edges with 2 simultaneous pulses
+    for (const e of edges) {
+      const na = nodes[e.a], nb = nodes[e.b];
+      const dx = nb.x - na.x, dy = nb.y - na.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist > LINK_DIST) continue;
+
+      e.p1 = (e.p1 + PULSE_SPD) % 1;
+      e.p2 = (e.p2 + PULSE_SPD) % 1;
+      const fade   = (1 - dist / LINK_DIST);
+      const edgeDim = Math.min(na.baseLit ?? 1, nb.baseLit ?? 1);
+      const ca     = COLS[na.colorIdx], cb = COLS[nb.colorIdx];
+
+      // Gradient edge line
+      const lg = ctx.createLinearGradient(na.x, na.y, nb.x, nb.y);
+      lg.addColorStop(0, colStr(ca, fade * 0.22 * edgeDim));
+      lg.addColorStop(1, colStr(cb, fade * 0.22 * edgeDim));
+      ctx.beginPath();
+      ctx.moveTo(na.x, na.y);
+      ctx.lineTo(nb.x, nb.y);
+      ctx.strokeStyle = lg;
+      ctx.lineWidth = 1.0;
+      ctx.stroke();
+
+      // Pulse 1 — bright dot
+      const p1x = na.x + dx * e.p1, p1y = na.y + dy * e.p1;
+      drawGlow(p1x, p1y, 8, ca, fade * 0.55 * edgeDim);
+      ctx.beginPath();
+      ctx.arc(p1x, p1y, 2.5, 0, Math.PI * 2);
+      ctx.fillStyle = colStr(ca, fade * 0.95 * edgeDim);
+      ctx.fill();
+
+      // Pulse 2 — dimmer
+      const p2x = na.x + dx * e.p2, p2y = na.y + dy * e.p2;
+      ctx.beginPath();
+      ctx.arc(p2x, p2y, 1.6, 0, Math.PI * 2);
+      ctx.fillStyle = colStr(cb, fade * 0.65 * edgeDim);
+      ctx.fill();
+    }
+
+    // Thin spoke lines from nearby nodes to photo
+    for (const n of nodes) {
+      const dx = pCX - n.x, dy = pCY - n.y;
+      const d  = Math.sqrt(dx * dx + dy * dy);
+      if (d > PHOTO_R * 3) continue;
+      const fade = 1 - d / (PHOTO_R * 3);
+      const col  = COLS[n.colorIdx];
+      const ex = pCX - (dx / d) * (PHOTO_R + 2);
+      const ey = pCY - (dy / d) * (PHOTO_R + 2);
+      const sg = ctx.createLinearGradient(n.x, n.y, ex, ey);
+      sg.addColorStop(0, colStr(col, fade * 0.12));
+      sg.addColorStop(1, colStr(C.green, fade * 0.4));
+      ctx.beginPath();
+      ctx.moveTo(n.x, n.y);
+      ctx.lineTo(ex, ey);
+      ctx.strokeStyle = sg;
+      ctx.lineWidth = 0.8;
+      ctx.stroke();
+    }
+
+    drawPhoto();
+
+    for (const n of nodes) drawNode(n);
+
+    requestAnimationFrame(draw);
+  }
+
+  draw();
 }
 
 function setupCardTilt() {
@@ -648,10 +1005,10 @@ function setupHeroTextParallax() {
   if (!hero) return;
 
   const layers = [
-    { sel: ".hero-kicker",  xf: 0.010, yf: 0.007 },
-    { sel: ".hero-title",   xf: 0.022, yf: 0.014 },
-    { sel: ".hero-subtitle",xf: 0.008, yf: 0.005 },
-    { sel: ".hero-cta",     xf: 0.016, yf: 0.011 },
+    { sel: ".hero-kicker",   xf: 0.010, yf: 0.007 },
+    { sel: ".hero-title",    xf: 0.024, yf: 0.015 },
+    { sel: ".hero-subtitle", xf: 0.020, yf: 0.013 },
+    { sel: ".hero-cta",      xf: 0.016, yf: 0.011 },
   ].map((l) => ({ ...l, el: document.querySelector(l.sel), cx: 0, cy: 0 }))
    .filter((l) => l.el);
 
@@ -680,6 +1037,115 @@ function setupHeroTextParallax() {
   tick();
 }
 
+function setupCustomCursor() {
+  // Only on pointer-fine (mouse) devices
+  if (!window.matchMedia("(pointer: fine)").matches) return;
+
+  const dot  = document.createElement("div");
+  dot.className = "cur-dot";
+  const ring = document.createElement("div");
+  ring.className = "cur-ring";
+  document.body.append(dot, ring);
+
+  let mx = -200, my = -200;
+  let rx = -200, ry = -200;
+  let scale = 1;
+
+  window.addEventListener("pointermove", (e) => {
+    mx = e.clientX;
+    my = e.clientY;
+  }, { passive: true });
+
+  // Hover state: expand ring on interactive elements
+  document.addEventListener("pointerover", (e) => {
+    if (e.target.closest("a, button, .btn, .card, [role='button']")) {
+      scale = 1.9;
+      ring.classList.add("is-hover");
+      dot.classList.add("is-hover");
+    }
+  });
+  document.addEventListener("pointerout", (e) => {
+    if (e.target.closest("a, button, .btn, .card, [role='button']")) {
+      scale = 1;
+      ring.classList.remove("is-hover");
+      dot.classList.remove("is-hover");
+    }
+  });
+
+  let ringScale = 1;
+  function tick() {
+    // Dot snaps to cursor immediately
+    dot.style.transform  = `translate(${mx}px, ${my}px) translate(-50%, -50%)`;
+    // Ring lags behind with lerp
+    rx += (mx - rx) * 0.11;
+    ry += (my - ry) * 0.11;
+    ringScale += (scale - ringScale) * 0.13;
+    ring.style.transform = `translate(${rx}px, ${ry}px) translate(-50%, -50%) scale(${ringScale})`;
+    requestAnimationFrame(tick);
+  }
+  tick();
+}
+
+function setupCardSlideshows() {
+  document.querySelectorAll('.card-slideshow').forEach(media => {
+    const slides  = media.querySelectorAll('.slide');
+    const dots    = media.querySelectorAll('.slide-dot');
+    const btnPrev = media.querySelector('.slide-arrow-prev');
+    const btnNext = media.querySelector('.slide-arrow-next');
+    if (slides.length < 2) return;
+
+    let idx          = 0;
+    let timer        = null;
+    let userActed    = false;
+
+    function goTo(n) {
+      slides[idx].classList.remove('active');
+      dots[idx] && dots[idx].classList.remove('active');
+      idx = (n + slides.length) % slides.length;
+      slides[idx].classList.add('active');
+      dots[idx] && dots[idx].classList.add('active');
+    }
+
+    function startAuto() {
+      if (timer) return;
+      timer = setInterval(() => goTo(idx + 1), 2200);
+    }
+
+    function stopAuto() {
+      clearInterval(timer);
+      timer = null;
+    }
+
+    media.addEventListener('mouseenter', () => {
+      if (!userActed) startAuto();
+    });
+
+    media.addEventListener('mouseleave', () => {
+      stopAuto();
+      userActed = false;
+      goTo(0);
+    });
+
+    if (btnPrev) {
+      btnPrev.addEventListener('click', e => {
+        e.stopPropagation();
+        stopAuto();
+        userActed = true;
+        goTo(idx - 1);
+      });
+    }
+
+    if (btnNext) {
+      btnNext.addEventListener('click', e => {
+        e.stopPropagation();
+        stopAuto();
+        userActed = true;
+        goTo(idx + 1);
+      });
+    }
+  });
+}
+
 function main() {
   setupNavbar();
   setupReveal();
@@ -687,10 +1153,12 @@ function main() {
   setFooterYear();
   setYouTubeLink();
   initThreeBackground();
-  setupRobotParallax();
+  initNodeNetwork();
   setupCardTilt();
   setupMagneticButtons();
   setupHeroTextParallax();
+  setupCustomCursor();
+  setupCardSlideshows();
 }
 
 if (document.readyState === "loading") {

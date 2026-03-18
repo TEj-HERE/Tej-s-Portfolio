@@ -39,6 +39,7 @@
         <div class="nav-links" id="nav-links">
           <a href="#about">About</a>
           <a href="#projects">Projects</a>
+          <a href="#education">Education</a>
           <a href="#experience">Experience</a>
           <a href="#contact">Contact</a>
         </div>
@@ -49,35 +50,21 @@
       <section class="hero" aria-label="Hero">
         <canvas id="bg-canvas" class="bg-canvas" aria-hidden="true"></canvas>
         <div class="bg-vignette" aria-hidden="true"></div>
+        <canvas id="node-canvas" class="node-canvas" aria-hidden="true"></canvas>
 
         <div class="hero-inner">
-          <div class="hero-grid">
-            <div class="hero-content">
-              <p class="hero-kicker reveal">HI, I'M</p>
-              <h1 class="hero-title reveal">Tej Singh</h1>
-              <p class="hero-subtitle reveal">
-                Electrical Engineering Student · Robotics Developer · Maker
-              </p>
+          <div class="hero-content">
+            <p class="hero-kicker reveal">HI, I'M</p>
+            <h1 class="hero-title reveal">Tej Singh</h1>
+            <p class="hero-subtitle reveal">
+              Electrical Engineering Student · Robotics Developer · Maker
+            </p>
 
-              <div class="hero-cta reveal">
-                <a class="btn btn-primary" href="#projects" data-scroll="projects">
-                  View My Work
-                  <span class="btn-glow" aria-hidden="true"></span>
-                </a>
-              </div>
-            </div>
-
-            <div class="hero-robot-wrapper reveal">
-              <div class="hero-robot-orbit">
-                <div class="hero-robot" id="hero-robot">
-                  <img
-                    src="./Gemini_Generated_Image_2rptfy2rptfy2rpt.png"
-                    alt="Friendly robot assistant illustration"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </div>
-              </div>
+            <div class="hero-cta reveal">
+              <a class="btn btn-primary" href="#projects" data-scroll="projects">
+                View My Work
+                <span class="btn-glow" aria-hidden="true"></span>
+              </a>
             </div>
           </div>
         </div>
@@ -99,10 +86,12 @@
 
             <div class="about-content reveal">
               <p class="lead">
-                I'm an Electrical Engineering student at York University with a passion for building
-                robots, designing PCBs, and creating things that didn't exist before. I've built
-                80+ robots, grown a YouTube channel to 360,000+ views, and competed in rocketry and
-                solar car teams.
+                I'm a B.Eng. Electrical Engineering student at York University's Lassonde School of
+                Engineering — transferred from the University of Calgary with strong academic
+                standing. I've been building robots since age 13: 80+ builds, 124+ YouTube videos,
+                360,000+ views, sponsored by JLCPCB &amp; REYAX Technology, and a 1st-place finish
+                at the UNHACK 2025 Hackathon. I design PCBs, build avionics, and run JETech Labs —
+                a STEAM education startup I founded to bring hands-on robotics to youth learners.
               </p>
 
               <div class="badge-row" aria-label="Key skills">
@@ -111,6 +100,9 @@
                 </span>
                 <span class="badge" title="Arduino">
                   <span class="badge-ico" aria-hidden="true">🔌</span>Arduino
+                </span>
+                <span class="badge" title="esp32">
+                  <span class="badge-ico" aria-hidden="true">📡</span>ESP32
                 </span>
                 <span class="badge" title="PCB Design">
                   <span class="badge-ico" aria-hidden="true">🧩</span>PCB Design
@@ -124,6 +116,15 @@
                 <span class="badge" title="SolidWorks">
                   <span class="badge-ico" aria-hidden="true">⚙️</span>SolidWorks
                 </span>
+                <span class="badge" title="MATLAB">
+                  <span class="badge-ico" aria-hidden="true">📊</span>MATLAB
+                </span>
+                <span class="badge" title="Java">
+                  <span class="badge-ico" aria-hidden="true">☕</span>Java
+                </span>
+                <span class="badge" title="3D Printing">
+                  <span class="badge-ico" aria-hidden="true">🖨️</span>3D Printing
+                </span>
               </div>
             </div>
           </div>
@@ -134,23 +135,50 @@
         <div class="container">
           <div class="section-head reveal">
             <h2>Things I've Built</h2>
-            <p>A few highlights — swap placeholders with your real projects anytime.</p>
+            <p>A selection of projects spanning robotics, embedded systems, PCB design, and AI.</p>
           </div>
 
           <div class="cards-grid">
             <article class="card reveal">
               <div class="card-media" aria-hidden="true"></div>
               <div class="card-body">
-                <h3>6-DOF Robotic Arm</h3>
-                <p>
-                  3D printed robotic arm with real-time OpenCV object detection and manipulation.
-                </p>
+                <h3>Rocket Flight Computer PCB</h3>
+                <p>Designed a custom full flight-computer PCB from scratch for rocket avionics, sensor integration, and control systems on a competitive rocketry team.</p>
                 <div class="tag-row" aria-label="Tech stack">
-                  <span class="tag">Python</span>
-                  <span class="tag">OpenCV</span>
-                  <span class="tag">Arduino</span>
+                  <span class="tag">Altium</span>
+                  <span class="tag">KiCad</span>
+                  <span class="tag">Embedded C</span>
                 </div>
-                <a class="btn btn-small" href="#" aria-label="View project: 6-DOF Robotic Arm">
+                <a class="btn btn-small" href="#" aria-label="View project: Rocket Flight Computer PCB">
+                  View Project
+                </a>
+              </div>
+            </article>
+
+            <article class="card reveal">
+              <div class="card-media card-slideshow" aria-hidden="true">
+                <img src="./images/solar-car-1.png" class="slide active" alt="Solar car team">
+                <img src="./images/solar-car-4.png" class="slide" alt="Power distribution system">
+                <img src="./images/solar-car-3.png" class="slide" alt="Inside the solar car">
+                <img src="./images/solar-car-zoom.png" class="slide" alt="Solar car team — zoomed">
+                <button class="slide-arrow slide-arrow-prev" aria-label="Previous image">&#8249;</button>
+                <button class="slide-arrow slide-arrow-next" aria-label="Next image">&#8250;</button>
+                <div class="slide-dots" aria-hidden="true">
+                  <span class="slide-dot active"></span>
+                  <span class="slide-dot"></span>
+                  <span class="slide-dot"></span>
+                  <span class="slide-dot"></span>
+                </div>
+              </div>
+              <div class="card-body">
+                <h3>Solar Car Electrical Systems</h3>
+                <p>BMS, motor test rigs, and power distribution for two solar race vehicles (Elyse &amp; Hades) competing at the Formula Sun Grand Prix.</p>
+                <div class="tag-row" aria-label="Tech stack">
+                  <span class="tag">BMS</span>
+                  <span class="tag">Motor Control</span>
+                  <span class="tag">Power Systems</span>
+                </div>
+                <a class="btn btn-small" href="#" aria-label="View project: Solar Car Electrical Systems">
                   View Project
                 </a>
               </div>
@@ -160,10 +188,7 @@
               <div class="card-media" aria-hidden="true"></div>
               <div class="card-body">
                 <h3>AI Desk Robot</h3>
-                <p>
-                  PyTorch-powered robot that detects distraction and inactivity using computer
-                  vision on edge hardware.
-                </p>
+                <p>PyTorch-powered robot arm that passively detects user distraction and inactivity using computer vision and ML inference on edge hardware.</p>
                 <div class="tag-row" aria-label="Tech stack">
                   <span class="tag">PyTorch</span>
                   <span class="tag">OpenCV</span>
@@ -178,27 +203,12 @@
             <article class="card reveal">
               <div class="card-media" aria-hidden="true"></div>
               <div class="card-body">
-                <h3>Rocket Flight Computer PCB</h3>
-                <p>Custom-designed PCB for avionics and control systems on a competitive rocketry team.</p>
-                <div class="tag-row" aria-label="Tech stack">
-                  <span class="tag">KiCad</span>
-                  <span class="tag">Embedded C</span>
-                  <span class="tag">Altium</span>
-                </div>
-                <a class="btn btn-small" href="#" aria-label="View project: Rocket Flight Computer PCB">
-                  View Project
-                </a>
-              </div>
-            </article>
-
-            <article class="card reveal">
-              <div class="card-media" aria-hidden="true"></div>
-              <div class="card-body">
                 <h3>DC-DC Servo Power Board</h3>
-                <p>Low-noise voltage regulation board for servo motors under high-vibration flight conditions.</p>
+                <p>Custom PCB delivering stable, low-noise voltage regulation to servo actuators under high-vibration rocket flight conditions.</p>
                 <div class="tag-row" aria-label="Tech stack">
                   <span class="tag">PCB Design</span>
                   <span class="tag">Power Electronics</span>
+                  <span class="tag">Altium</span>
                 </div>
                 <a class="btn btn-small" href="#" aria-label="View project: DC-DC Servo Power Board">
                   View Project
@@ -209,14 +219,39 @@
             <article class="card reveal">
               <div class="card-media" aria-hidden="true"></div>
               <div class="card-body">
-                <h3>Solar Car Electrical Systems</h3>
-                <p>BMS, motor control, and power distribution for a Formula Sun Grand Prix solar vehicle.</p>
+                <h3>Too Young To Learn All</h3>
+                <p>YouTube channel with 124+ published videos on robotics, embedded systems, and electronics — 360,000+ views and counting, sponsored by JLCPCB &amp; REYAX Technology.</p>
                 <div class="tag-row" aria-label="Tech stack">
-                  <span class="tag">BMS</span>
-                  <span class="tag">Motor Control</span>
-                  <span class="tag">Testing</span>
+                  <span class="tag">124+ Videos</span>
+                  <span class="tag">360k+ Views</span>
+                  <span class="tag">Sponsored</span>
                 </div>
-                <a class="btn btn-small" href="#" aria-label="View project: Solar Car Electrical Systems">
+                <a class="btn btn-small" href="#" aria-label="View channel: Too Young To Learn All" data-youtube>
+                  View Channel
+                </a>
+              </div>
+            </article>
+
+            <article class="card reveal">
+              <div class="card-media card-slideshow" aria-hidden="true">
+                <img src="./images/jetech-1.png" class="slide active" alt="Building the JetBox robotic arm kit">
+                <img src="./images/jetech-2.png" class="slide" alt="Assembling and packing JetBox kits">
+                <button class="slide-arrow slide-arrow-prev" aria-label="Previous image">&#8249;</button>
+                <button class="slide-arrow slide-arrow-next" aria-label="Next image">&#8250;</button>
+                <div class="slide-dots" aria-hidden="true">
+                  <span class="slide-dot active"></span>
+                  <span class="slide-dot"></span>
+                </div>
+              </div>
+              <div class="card-body">
+                <h3>JETech Labs</h3>
+                <p>Founded a robotics STEAM education startup — built the full product, curriculum, and subscription model from scratch to deliver hands-on electronics kits to youth learners.</p>
+                <div class="tag-row" aria-label="Tech stack">
+                  <span class="tag">Startup</span>
+                  <span class="tag">Arduino</span>
+                  <span class="tag">Curriculum Design</span>
+                </div>
+                <a class="btn btn-small" href="#" aria-label="View project: JETech Labs">
                   View Project
                 </a>
               </div>
@@ -225,16 +260,14 @@
             <article class="card reveal">
               <div class="card-media" aria-hidden="true"></div>
               <div class="card-body">
-                <h3>JETech Labs</h3>
-                <p>
-                  Founded a robotics STEAM education startup delivering electronics kits and curriculum to youth learners.
-                </p>
+                <h3>6-DOF Robotic Arm</h3>
+                <p>3D-printed 6-degree-of-freedom robotic arm integrated with OpenCV for real-time computer vision and autonomous object detection and manipulation.</p>
                 <div class="tag-row" aria-label="Tech stack">
-                  <span class="tag">Startup</span>
-                  <span class="tag">Arduino</span>
-                  <span class="tag">Curriculum</span>
+                  <span class="tag">Python</span>
+                  <span class="tag">OpenCV</span>
+                  <span class="tag">3D Printing</span>
                 </div>
-                <a class="btn btn-small" href="#" aria-label="View project: JETech Labs">
+                <a class="btn btn-small" href="#" aria-label="View project: 6-DOF Robotic Arm">
                   View Project
                 </a>
               </div>
@@ -243,7 +276,70 @@
         </div>
       </section>
 
-      <section id="experience" class="section">
+      <section id="education" class="section">
+        <div class="container">
+          <div class="section-head reveal">
+            <h2>Education</h2>
+            <p>Strong academic foundations paired with real-world competitive experience.</p>
+          </div>
+
+          <div class="edu-grid">
+            <div class="edu-card reveal">
+              <div class="edu-school">York University — Lassonde School of Engineering</div>
+              <div class="edu-degree">B.Eng. in Electrical Engineering</div>
+              <div class="edu-meta">Toronto, Ontario &nbsp;·&nbsp; Sep 2025 – Expected Apr 2029</div>
+              <ul class="edu-bullets">
+                <li>Transferred from University of Calgary with strong academic standing; actively contributing to competitive engineering teams</li>
+                <li><strong>Relevant Coursework:</strong> Circuit Analysis, Embedded Systems, Signals &amp; Systems, Engineering Mathematics</li>
+              </ul>
+            </div>
+
+            <div class="edu-card reveal">
+              <div class="edu-school">Fletcher's Meadow Secondary School</div>
+              <div class="edu-degree">Ontario Secondary School Diploma</div>
+              <div class="edu-meta">Brampton, Ontario &nbsp;·&nbsp; Sep 2020 – Jun 2024</div>
+              <ul class="edu-bullets">
+                <li>Graduated with <strong>Honors</strong> — 92.5% average, top of cohort</li>
+                <li>Advanced coursework in Mathematics, Chemistry, Physics, Engineering &amp; Technology, and Computer Science</li>
+                <li>Hand-selected by faculty for School Leadership Team; co-organized and executed school-wide events</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="achievements-row reveal">
+            <div class="achievement-chip">
+              <span class="achievement-icon" aria-hidden="true">🏆</span>
+              <div>
+                <div class="achievement-title">1st Place — UNHACK 2025</div>
+                <div class="achievement-sub">York University Hackathon · ~1,000 participants</div>
+              </div>
+            </div>
+            <div class="achievement-chip">
+              <span class="achievement-icon" aria-hidden="true">🚀</span>
+              <div>
+                <div class="achievement-title">Gen AI Genesis 2026</div>
+                <div class="achievement-sub">North America's Largest AI Hackathon · 814 participants</div>
+              </div>
+            </div>
+            <div class="achievement-chip">
+              <span class="achievement-icon" aria-hidden="true">🧠</span>
+              <div>
+                <div class="achievement-title">Brain Bee — Neuroscience Competition</div>
+                <div class="achievement-sub">University-level competitor, Toronto</div>
+              </div>
+            </div>
+            <div class="achievement-chip">
+              <span class="achievement-icon" aria-hidden="true">💼</span>
+              <div>
+                <div class="achievement-title">DECA — Business Case Competition</div>
+                <div class="achievement-sub">Semi-finalist in on-the-spot business challenge</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="experience" class="section section-alt">
         <div class="container">
           <div class="section-head reveal">
             <h2>Experience</h2>
@@ -254,44 +350,66 @@
             <div class="tl-item reveal" role="listitem">
               <div class="tl-card">
                 <div class="tl-meta">
-                  <span class="tl-org">Arbalest Rocketry</span>
+                  <span class="tl-org">York University — Arbalest Rocketry Team</span>
                   <span class="tl-date">Sep 2025–Present</span>
                 </div>
-                <div class="tl-role">Avionics / Electrical</div>
-                <p>Building flight electronics and control systems for competitive rocketry.</p>
+                <div class="tl-role">Electrical Hardware Engineer</div>
+                <p>Designed two custom PCBs from scratch — a full flight-computer for rocket avionics and a DC-DC Servo Power Board — driving cross-subteam integration between avionics, propulsion, and software.</p>
               </div>
             </div>
 
             <div class="tl-item reveal" role="listitem">
               <div class="tl-card">
                 <div class="tl-meta">
-                  <span class="tl-org">University of Calgary Solar Car</span>
+                  <span class="tl-org">University of Calgary — Solar Car Racing Team</span>
                   <span class="tl-date">Oct–Dec 2024</span>
                 </div>
-                <div class="tl-role">Electrical Systems</div>
-                <p>BMS, motor control, and power distribution for a Formula Sun Grand Prix vehicle.</p>
+                <div class="tl-role">Electrical Engineering Team</div>
+                <p>Contributed to electrical system design and verification for solar race vehicles (Elyse &amp; Hades), including BMS, Motor Test Rigs, and power distribution for Formula Sun Grand Prix competition.</p>
               </div>
             </div>
 
             <div class="tl-item reveal" role="listitem">
               <div class="tl-card">
                 <div class="tl-meta">
-                  <span class="tl-org">JETech Labs</span>
+                  <span class="tl-org">JETech Labs — STEAM Education Startup</span>
                   <span class="tl-date">Aug 2023–Present</span>
                 </div>
-                <div class="tl-role">Founder</div>
-                <p>Delivering hands-on robotics kits and curriculum for youth STEAM learning.</p>
+                <div class="tl-role">Founder &amp; CEO</div>
+                <p>Founded and scaled a robotics STEAM startup delivering hands-on electronics &amp; robotics kits to youth learners. Built a full subscription-based product, curriculum, video tutorials, and digital marketing operation from the ground up.</p>
               </div>
             </div>
 
             <div class="tl-item reveal" role="listitem">
               <div class="tl-card">
                 <div class="tl-meta">
-                  <span class="tl-org">YouTube Creator</span>
+                  <span class="tl-org">Too Young To Learn All — YouTube &amp; Content</span>
                   <span class="tl-date">Aug 2021–Present</span>
                 </div>
-                <div class="tl-role">360k+ views</div>
-                <p>Documenting builds and sharing robotics lessons with a growing audience.</p>
+                <div class="tl-role">Independent Creator · Sponsored by JLCPCB &amp; REYAX Technology</div>
+                <p>Grew a channel to 360,000+ views across 124+ videos covering robotics, embedded systems, and 3D design. Secured sponsorships from hardware companies and built an engaged global audience of makers and students.</p>
+              </div>
+            </div>
+
+            <div class="tl-item reveal" role="listitem">
+              <div class="tl-card">
+                <div class="tl-meta">
+                  <span class="tl-org">UNI Tires</span>
+                  <span class="tl-date">Feb 2022–Present</span>
+                </div>
+                <div class="tl-role">Equipment &amp; Service Technician</div>
+                <p>Operate and maintain professional tire-changing machines and wheel balancers; conduct electrical and diagnostic assessments on service equipment, troubleshooting faults in pneumatic systems, wiring, and sensors.</p>
+              </div>
+            </div>
+
+            <div class="tl-item reveal" role="listitem">
+              <div class="tl-card">
+                <div class="tl-meta">
+                  <span class="tl-org">JM Design &amp; Build Inc</span>
+                  <span class="tl-date">July 2021–Present</span>
+                </div>
+                <div class="tl-role">Digital Marketing &amp; Business Manager</div>
+                <p>Manage full-scope digital marketing operations including website development, SEO optimization, and client-facing communication. Contribute to on-site residential renovation and construction project coordination.</p>
               </div>
             </div>
           </div>
