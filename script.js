@@ -1138,7 +1138,10 @@ const PROJECT_OVERLAYS = {
   jetech: {
     title: "JETech Labs",
     desc: "Founded a robotics STEAM education startup — built the full product, curriculum, and subscription model from scratch to deliver hands-on electronics kits to youth learners.",
-    images: [{ src: "./images/jetech-1.png", alt: "Building the JetBox robotic arm kit" }],
+    images: [
+      { src: "./images/jetech-jetbox.png", alt: "JetBox Gen 1 kits at JETech Labs" },
+      { src: "./images/jetech-1.png", alt: "Building the JetBox robotic arm kit" },
+    ],
     slideshow: false,
     takeaways: [
       "End-to-end operations: product design, component sourcing, video curriculum, digital marketing",
