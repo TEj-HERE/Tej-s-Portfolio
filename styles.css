@@ -1331,10 +1331,54 @@ img {
   justify-content: center;
 }
 .footer {
-  padding: 28px 0 10px;
+  position: relative;
+  overflow: hidden;
+  min-height: 280px;
+  margin-top: 36px;
+  padding: 0;
   text-align: center;
-  color: rgba(255, 255, 255, 0.55);
+  color: rgba(255, 255, 255, 0.75);
   font-size: 13px;
+}
+.footer-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.footer-video-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Subject sits lower/left in frame — bias up to keep forehead / top of head in view */
+  object-position: 22% 39%;
+  pointer-events: none;
+}
+.footer-bg-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    180deg,
+    rgba(5, 8, 12, 0.75) 0%,
+    rgba(5, 8, 12, 0.55) 40%,
+    rgba(5, 8, 12, 0.82) 100%
+  );
+  pointer-events: none;
+}
+.footer-inner {
+  position: relative;
+  z-index: 2;
+  padding: 48px 20px 28px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .footer-video-bg {
+    display: none;
+  }
+  .footer-bg-scrim {
+    background: rgba(5, 8, 12, 0.92);
+  }
 }
 
 /* Custom cursor */

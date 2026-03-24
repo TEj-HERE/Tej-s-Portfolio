@@ -118,6 +118,17 @@ function setFooterYear() {
   if (y) y.textContent = String(new Date().getFullYear());
 }
 
+function setupFooterVideoBg() {
+  const v = document.querySelector(".footer-video-bg");
+  if (!v) return;
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    v.pause();
+    v.removeAttribute("autoplay");
+    return;
+  }
+  v.play().catch(() => {});
+}
+
 function setYouTubeLink() {
   // Placeholder requested: “Too Young To Learn All” (channel name). Using a YouTube search URL by default.
   const url = "https://www.youtube.com/channel/UCZCSh99yfUspORSF058BZBQ";
@@ -1408,6 +1419,7 @@ function main() {
   setupReveal();
   setupHeroButton();
   setFooterYear();
+  setupFooterVideoBg();
   setYouTubeLink();
   initThreeBackground();
   initNodeNetwork();
