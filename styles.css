@@ -1352,7 +1352,7 @@ img {
   height: 100%;
   object-fit: cover;
   /* Subject sits lower/left in frame — bias up to keep forehead / top of head in view */
-  object-position: 22% 39%;
+  object-position: 22% 38%;
   pointer-events: none;
 }
 .footer-bg-scrim {
