@@ -1118,7 +1118,18 @@ const PROJECT_OVERLAYS = {
   "ai-desk-robot": {
     title: "AI Desk Robot",
     desc: "PyTorch-powered robot arm that passively detects user distraction and inactivity using computer vision and ML inference on edge hardware.",
-    images: null,
+    images: [
+      {
+        src: "./images/ai-desk-robot-prototype-1.png",
+        alt: "First prototype: red 3D-printed base, cardboard arm, and blue LED matrix face",
+      },
+    ],
+    slideshow: false,
+    buildVideos: [
+      { label: "Prototype 1", url: "https://www.youtube.com/shorts/2TMexDI5K8g" },
+      { label: "Prototype 2", url: "" },
+      { label: "Final Build", url: "" },
+    ],
     takeaways: [
       "Applied PyTorch and OpenCV for real-time computer vision on Raspberry Pi",
       "Edge ML inference for low-latency distraction detection",
@@ -1173,6 +1184,8 @@ function setupProjectOverlays() {
   const highlightsEl = document.getElementById("project-overlay-highlights");
   const tagsEl = document.getElementById("project-overlay-tags");
   const contentEl = overlay?.querySelector(".project-overlay-content");
+  const videoLinksWrap = document.getElementById("project-overlay-video-links-wrap");
+  const videoLinksEl = document.getElementById("project-overlay-video-links");
 
   if (!overlay || !titleEl || !slidesContainer) return;
 
@@ -1219,6 +1232,35 @@ function setupProjectOverlays() {
       span.textContent = tag;
       tagsEl.appendChild(span);
     });
+    if (videoLinksWrap && videoLinksEl) {
+      if (data.buildVideos?.length) {
+        videoLinksWrap.hidden = false;
+        videoLinksEl.innerHTML = "";
+        data.buildVideos.forEach(({ label, url }) => {
+          const u = (url || "").trim();
+          if (u) {
+            const a = document.createElement("a");
+            a.className = "btn btn-small project-overlay-video-btn";
+            a.href = u;
+            a.target = "_blank";
+            a.rel = "noreferrer";
+            a.textContent = label;
+            videoLinksEl.appendChild(a);
+          } else {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "btn btn-small project-overlay-video-btn project-overlay-video-btn-pending";
+            btn.disabled = true;
+            btn.textContent = label;
+            btn.title = "YouTube link coming soon";
+            videoLinksEl.appendChild(btn);
+          }
+        });
+      } else {
+        videoLinksWrap.hidden = true;
+        videoLinksEl.innerHTML = "";
+      }
+    }
   };
 
   let lastOpenedBtn = null;

@@ -611,6 +611,12 @@ img {
     rgba(255, 255, 255, 0.03);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
+.card-media > img:only-child {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
 
 /* Hover slideshow */
 
@@ -914,6 +920,37 @@ img {
   font-size: 13px;
   line-height: 1.55;
   color: rgba(255, 255, 255, 0.7);
+}
+.project-overlay-video-links-wrap {
+  margin: 0 0 14px;
+}
+.project-overlay-video-links-wrap[hidden] {
+  display: none !important;
+}
+.project-overlay-video-links-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--green);
+  margin-bottom: 8px;
+}
+.project-overlay-video-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.project-overlay-body .project-overlay-video-btn {
+  margin-top: 0;
+  text-decoration: none;
+  text-align: center;
+}
+.project-overlay-body button.project-overlay-video-btn-pending {
+  cursor: not-allowed;
+  opacity: 0.45;
+  border-color: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.45);
 }
 .project-overlay-takeaways {
   margin-bottom: 14px;

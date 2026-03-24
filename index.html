@@ -213,7 +213,9 @@
             </article>
 
             <article class="card reveal" data-overlay-card data-project-overlay="ai-desk-robot">
-              <div class="card-media" aria-hidden="true"></div>
+              <div class="card-media" aria-hidden="true">
+                <img src="./images/ai-desk-robot-prototype-1.png" alt="AI Desk Robot first prototype: red base, cardboard arm, blue LED matrix">
+              </div>
               <div class="card-body">
                 <h3>AI Desk Robot</h3>
                 <p>Engineered an AI-powered desktop robot that passively monitors user focus -- using PyTorch and OpenCV to detect distraction and inactivity in real time, running full ML inference on edge hardware with no cloud dependency.</p>
@@ -229,7 +231,18 @@
             </article>
 
             <article class="card reveal">
-              <div class="card-media" aria-hidden="true"></div>
+              <div class="card-media card-slideshow" aria-hidden="true">
+                <img src="./images/gestura-1-hand-up-dashboard.png" class="slide active" alt="Gestura dashboard with live webcam: hand raised and tracked, status Running">
+                <img src="./images/gestura-2-play-next-hand.png" class="slide" alt="Gestura Play Next demo: open hand gesture with green finger highlights">
+                <img src="./images/gestura-3-dashboard-idle.png" class="slide" alt="Gestura AI Gesture Dashboard: idle state with Start and sensitivity controls">
+                <button class="slide-arrow slide-arrow-prev" aria-label="Previous image">&#8249;</button>
+                <button class="slide-arrow slide-arrow-next" aria-label="Next image">&#8250;</button>
+                <div class="slide-dots" aria-hidden="true">
+                  <span class="slide-dot active"></span>
+                  <span class="slide-dot"></span>
+                  <span class="slide-dot"></span>
+                </div>
+              </div>
               <div class="card-body">
                 <h3>Gestura</h3>
                 <p>Built an AI-powered air gesture controller that lets you adjust PC volume and playback using only hand movements -- no touch required. Real-time hand tracking powered by OpenCV with sub-100ms response latency.</p>
@@ -575,6 +588,10 @@
           <div class="project-overlay-body">
             <h2 id="project-overlay-title">Project</h2>
             <p class="project-overlay-desc" id="project-overlay-desc"></p>
+            <div class="project-overlay-video-links-wrap" id="project-overlay-video-links-wrap" hidden>
+              <span class="project-overlay-video-links-label">Build videos</span>
+              <div class="project-overlay-video-links" id="project-overlay-video-links" role="group" aria-label="Build videos"></div>
+            </div>
             <div class="project-overlay-takeaways" id="project-overlay-takeaways">
               <span class="project-overlay-takeaways-label">Key learnings</span>
               <ul class="project-overlay-highlights" id="project-overlay-highlights"></ul>
