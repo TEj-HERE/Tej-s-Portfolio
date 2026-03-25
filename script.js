@@ -911,6 +911,197 @@ function initNodeNetwork() {
   draw();
 }
 
+/**
+ * Experience section only: soft aurora ribbons + staggered dot lattice that bend toward the pointer.
+ * Intentionally 2D / non-graph (unlike hero Three.js + node network).
+ */
+function initExperienceAurora() {
+  const section = document.getElementById("experience");
+  const canvas = document.getElementById("experience-canvas");
+  if (!section || !canvas || state.reduceMotion) return;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return;
+
+  let W = 0;
+  let H = 0;
+  let tx = 0.5;
+  let ty = 0.28;
+  let mx = 0.5;
+  let my = 0.28;
+  let pointerInside = false;
+  let targetFx = 1;
+  let fx = 1;
+  let t = 0;
+  let raf = 0;
+  let visible = false;
+
+  const UI_DIM_SEL = ".section-head, .tytla-featured, .tl-card";
+
+  const LINE_COUNT = 8;
+  const SEGS = 36;
+
+  function resize() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = Math.max(1, section.clientWidth);
+    H = Math.max(1, section.clientHeight);
+    canvas.width = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
+    canvas.style.width = `${W}px`;
+    canvas.style.height = `${H}px`;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  const ro = new ResizeObserver(resize);
+  ro.observe(section);
+  resize();
+
+  window.addEventListener(
+    "pointermove",
+    (e) => {
+      const r = section.getBoundingClientRect();
+      const w = r.width || W;
+      const h = r.height || H;
+      pointerInside =
+        e.clientX >= r.left &&
+        e.clientX <= r.right &&
+        e.clientY >= r.top &&
+        e.clientY <= r.bottom;
+      if (pointerInside && w > 0 && h > 0) {
+        tx = (e.clientX - r.left) / w;
+        ty = (e.clientY - r.top) / h;
+      }
+      if (!pointerInside) {
+        targetFx = 1;
+      } else {
+        const hit = document.elementFromPoint(e.clientX, e.clientY);
+        const overUi =
+          hit &&
+          section.contains(hit) &&
+          hit.closest(UI_DIM_SEL);
+        targetFx = overUi ? 0.12 : 1;
+      }
+    },
+    { passive: true }
+  );
+
+  function scheduleTick() {
+    if (raf) return;
+    raf = requestAnimationFrame(tick);
+  }
+
+  const io = new IntersectionObserver(
+    (entries) => {
+      const v = entries.some((en) => en.isIntersecting);
+      visible = v;
+      if (v) scheduleTick();
+      else {
+        cancelAnimationFrame(raf);
+        raf = 0;
+      }
+    },
+    { threshold: 0.02, rootMargin: "120px" }
+  );
+  io.observe(section);
+
+  queueMicrotask(() => {
+    const r = section.getBoundingClientRect();
+    if (r.bottom > 0 && r.top < window.innerHeight + 160) {
+      visible = true;
+      scheduleTick();
+    }
+  });
+
+  function drawHexField(mxx, myy) {
+    const gapX = 38;
+    const gapY = gapX * 0.86;
+    let row = 0;
+    for (let py = gapY * 0.5; py < H; py += gapY) {
+      const offset = (row % 2) * (gapX * 0.5);
+      for (let px = offset + gapX * 0.35; px < W; px += gapX) {
+        const d = Math.hypot(px - mxx, py - myy);
+        const wobble = 0.02 + 0.015 * Math.sin(t * 0.9 + px * 0.03 + py * 0.02);
+        const near = Math.max(0, 1 - d / 240);
+        const a = wobble + near * 0.15;
+        ctx.fillStyle = `rgba(0, 240, 190, ${Math.min(0.24, a)})`;
+        ctx.beginPath();
+        ctx.arc(px, py, 1.1 + near * 2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      row++;
+    }
+  }
+
+  function drawRibbons(mxx, myy) {
+    for (let L = 0; L < LINE_COUNT; L++) {
+      const bias = L * 0.31;
+      const baseY = H * (0.08 + L * 0.108) + Math.sin(t * 0.35 + bias) * 10;
+      ctx.beginPath();
+      for (let i = 0; i <= SEGS; i++) {
+        const x = (i / SEGS) * W;
+        const dx = x - mxx;
+        const dy = baseY - myy;
+        const dist = Math.sqrt(dx * dx + dy * dy) + 100;
+        const attract = (340 / dist) * 42;
+        const wave =
+          Math.sin(x * 0.011 + t * 1.15 + bias) * (16 + attract * 0.45) +
+          Math.cos(x * 0.019 - t * 0.7 + L) * 6;
+        const shear = ((mxx - x) / Math.max(W, 1)) * 28 * Math.sin(t * 0.5 + L * 0.4);
+        const y = baseY + wave + shear;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      const g = ctx.createLinearGradient(0, baseY - 50, W, baseY + 50);
+      g.addColorStop(0, "rgba(0,255,140,0)");
+      g.addColorStop(0.32, `rgba(0,255,170,${0.05 + L * 0.012})`);
+      g.addColorStop(0.55, `rgba(0,200,255,${0.04 + L * 0.01})`);
+      g.addColorStop(1, "rgba(0,100,255,0)");
+      ctx.strokeStyle = g;
+      ctx.lineWidth = 1.15;
+      ctx.lineJoin = "round";
+      ctx.lineCap = "round";
+      ctx.shadowColor = "rgba(0,255,180,0.42)";
+      ctx.shadowBlur = 14;
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+    }
+  }
+
+  function tick() {
+    raf = 0;
+    if (!visible || W < 2) return;
+    raf = requestAnimationFrame(tick);
+
+    if (!pointerInside) {
+      tx = 0.5;
+      ty = 0.26 + Math.sin(t * 0.015) * 0.045;
+    }
+    mx += (tx - mx) * 0.07;
+    my += (ty - my) * 0.07;
+    fx += (targetFx - fx) * 0.14;
+
+    const mxx = mx * W;
+    const myy = my * H;
+
+    ctx.clearRect(0, 0, W, H);
+
+    ctx.save();
+    ctx.globalAlpha = fx;
+    drawHexField(mxx, myy);
+    drawRibbons(mxx, myy);
+
+    const bloomR = Math.min(W, H) * 0.48;
+    const bloom = ctx.createRadialGradient(mxx, myy, 0, mxx, myy, bloomR);
+    bloom.addColorStop(0, "rgba(0,255,200,0.058)");
+    bloom.addColorStop(0.45, "rgba(0,140,255,0.028)");
+    bloom.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = bloom;
+    ctx.fillRect(0, 0, W, H);
+    ctx.restore();
+
+    t += 0.018;
+  }
+}
+
 function setupCardTilt() {
   if (state.reduceMotion) return;
 
@@ -967,6 +1158,7 @@ function setupMagneticButtons() {
   if (state.reduceMotion) return;
 
   document.querySelectorAll(".btn-primary").forEach((btn) => {
+    if (btn.classList.contains("btn-hero-cta")) return;
     let raf = 0;
     let tx = 0, ty = 0;
     let cx = 0, cy = 0;
@@ -1366,13 +1558,22 @@ function setupCardSlideshows() {
     let timer        = null;
     let userActed    = false;
 
-    function goTo(n) {
-      slides[idx].classList.remove('active');
-      dots[idx] && dots[idx].classList.remove('active');
-      idx = (n + slides.length) % slides.length;
-      slides[idx].classList.add('active');
-      dots[idx] && dots[idx].classList.add('active');
+    function applySlideState() {
+      slides.forEach((slide, i) => {
+        slide.classList.remove("active", "slide-before", "slide-after");
+        if (i === idx) slide.classList.add("active");
+        else if (i < idx) slide.classList.add("slide-before");
+        else slide.classList.add("slide-after");
+      });
+      dots.forEach((dot, i) => dot.classList.toggle("active", i === idx));
     }
+
+    function goTo(n) {
+      idx = (n + slides.length) % slides.length;
+      applySlideState();
+    }
+
+    applySlideState();
 
     function startAuto() {
       if (timer) return;
@@ -1424,6 +1625,7 @@ function main() {
   setYouTubeLink();
   initThreeBackground();
   initNodeNetwork();
+  initExperienceAurora();
   setupCardTilt();
   setupMagneticButtons();
   setupHeroTextParallax();
