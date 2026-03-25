@@ -1296,6 +1296,7 @@ const PROJECT_OVERLAYS = {
     images: [
       { src: "./images/rocket-pcb-1.png", alt: "Rocket PCB schematic" },
       { src: "./images/rocket-pcb-3d.png", alt: "3D render of rocket flight computer PCB" },
+      { src: "./images/rocket-pcb-board-photo.png", alt: "Flight computer PCB — assembled board photo" },
       { src: "./images/rocket-pcb-2.png", alt: "Reviewing rocket PCB schematic" },
       { src: "./images/rocket-pcb-layout.png", alt: "Rocket PCB layout" },
     ],
@@ -1545,6 +1546,129 @@ function setupProjectOverlays() {
   });
 }
 
+/**
+ * Primary card CTAs: brighter styling (CSS) + subtle canvas particle drift.
+ * `data-project-overlay` (View Project) or `data-cta-glow` (e.g. Gestura View Demo).
+ */
+function setupCardViewProjectEnhancements() {
+  const anchors = document.querySelectorAll(
+    "a.btn.btn-small[data-project-overlay], a.btn.btn-small[data-cta-glow]"
+  );
+  if (!anchors.length) return;
+
+  if (state.reduceMotion) {
+    anchors.forEach((a) => {
+      if (a.dataset.ctaEnhanced === "1") return;
+      a.dataset.ctaEnhanced = "1";
+      a.classList.add("btn-view-project");
+      const wrap = document.createElement("span");
+      wrap.className = "card-cta-wrap";
+      a.parentNode.insertBefore(wrap, a);
+      wrap.appendChild(a);
+    });
+    return;
+  }
+
+  const instances = [];
+
+  anchors.forEach((a) => {
+    if (a.dataset.ctaEnhanced === "1") return;
+    a.dataset.ctaEnhanced = "1";
+    a.classList.add("btn-view-project");
+
+    const wrap = document.createElement("span");
+    wrap.className = "card-cta-wrap";
+    const canvas = document.createElement("canvas");
+    canvas.className = "card-cta-canvas";
+    canvas.setAttribute("aria-hidden", "true");
+    a.parentNode.insertBefore(wrap, a);
+    wrap.appendChild(canvas);
+    wrap.appendChild(a);
+
+    const inst = {
+      wrap,
+      canvas,
+      lw: 0,
+      lh: 0,
+      ctx: null,
+      cardHover: false,
+      particles: Array.from({ length: 14 }, () => ({
+        x: 0,
+        y: 0,
+        vx: (Math.random() - 0.5) * 0.52,
+        vy: (Math.random() - 0.5) * 0.52,
+        r: 0.65 + Math.random() * 1.25,
+        phase: Math.random() * Math.PI * 2,
+      })),
+    };
+
+    const card = a.closest(".card");
+    if (card) {
+      card.addEventListener("mouseenter", () => {
+        inst.cardHover = true;
+      });
+      card.addEventListener("mouseleave", () => {
+        inst.cardHover = false;
+      });
+    }
+
+    function syncCanvasSize() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const w = inst.wrap.clientWidth + 36;
+      const h = inst.wrap.clientHeight + 24;
+      inst.lw = w;
+      inst.lh = h;
+      inst.canvas.width = Math.round(w * dpr);
+      inst.canvas.height = Math.round(h * dpr);
+      inst.canvas.style.width = `${w}px`;
+      inst.canvas.style.height = `${h}px`;
+      const ctx = inst.canvas.getContext("2d");
+      if (!ctx) return;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      inst.ctx = ctx;
+      for (const p of inst.particles) {
+        p.x = Math.random() * w;
+        p.y = Math.random() * h;
+      }
+    }
+
+    syncCanvasSize();
+    const ro = new ResizeObserver(syncCanvasSize);
+    ro.observe(wrap);
+
+    instances.push(inst);
+  });
+
+  function tick() {
+    requestAnimationFrame(tick);
+    for (const inst of instances) {
+      const { ctx, lw, lh, particles, cardHover } = inst;
+      if (!ctx || lw < 8 || lh < 8) continue;
+      const speed = cardHover ? 1 : 0.36;
+      const baseA = cardHover ? 0.5 : 0.19;
+      ctx.clearRect(0, 0, lw, lh);
+      for (const p of particles) {
+        p.x += p.vx * speed;
+        p.y += p.vy * speed;
+        p.phase += 0.034 * speed;
+        if (p.x < -4 || p.x > lw + 4 || p.y < -4 || p.y > lh + 4) {
+          p.x = Math.random() * lw;
+          p.y = Math.random() * lh;
+          p.vx = (Math.random() - 0.5) * 0.55;
+          p.vy = (Math.random() - 0.5) * 0.55;
+        }
+        const alpha = baseA * (0.52 + 0.48 * Math.sin(p.phase));
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(0, 255, 175, ${Math.min(0.82, alpha)})`;
+        ctx.fill();
+      }
+    }
+  }
+
+  requestAnimationFrame(tick);
+}
+
 function setupCardSlideshows() {
   document.querySelectorAll('.card-slideshow').forEach(media => {
     const card = media.closest('.card');
@@ -1631,6 +1755,7 @@ function main() {
   setupHeroTextParallax();
   setupCustomCursor();
   setupProjectOverlays();
+  setupCardViewProjectEnhancements();
   setupCardSlideshows();
 }
 

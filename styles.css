@@ -533,6 +533,48 @@ img {
   margin-top: 14px;
 }
 
+/* View Project (project overlay) — wrapper + canvas particles (JS) */
+.card-cta-wrap {
+  position: relative;
+  display: inline-block;
+  margin-top: 14px;
+  max-width: 100%;
+  vertical-align: top;
+}
+.card-cta-wrap .card-cta-canvas {
+  position: absolute;
+  left: -18px;
+  top: -12px;
+  width: calc(100% + 36px);
+  height: calc(100% + 24px);
+  pointer-events: none;
+  z-index: 0;
+}
+.card-cta-wrap .btn-view-project {
+  position: relative;
+  z-index: 1;
+  margin-top: 0;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.96);
+  border-color: rgba(0, 255, 160, 0.52);
+  background: linear-gradient(
+    135deg,
+    rgba(0, 255, 136, 0.22),
+    rgba(0, 100, 190, 0.12)
+  );
+  box-shadow:
+    0 0 0 1px rgba(0, 255, 136, 0.28) inset,
+    0 2px 14px rgba(0, 0, 0, 0.4),
+    0 0 26px rgba(0, 255, 136, 0.22);
+}
+.card:hover .card-cta-wrap .btn-view-project {
+  border-color: rgba(0, 255, 200, 0.72);
+  box-shadow:
+    0 0 0 1px rgba(0, 255, 200, 0.32) inset,
+    0 4px 22px rgba(0, 0, 0, 0.45),
+    0 0 36px rgba(0, 255, 160, 0.32);
+}
+
 .scroll-indicator {
   position: absolute;
   bottom: 18px;
@@ -1727,6 +1769,9 @@ img {
   .btn-hero-shimmer-2 {
     animation: none;
     opacity: 0;
+  }
+  .card-cta-wrap .card-cta-canvas {
+    display: none;
   }
   .btn,
   .card,
