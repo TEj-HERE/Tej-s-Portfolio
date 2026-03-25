@@ -93,7 +93,19 @@
           </div>
 
           <div class="about-grid">
-            <div class="about-photo about-photo-image reveal" role="img" aria-label="Tej with JetBox kits at JETech Labs"></div>
+            <div class="about-photo about-photo-video reveal" aria-label="Tej — intro video">
+              <video
+                class="about-video-bg"
+                data-loop-video
+                autoplay
+                muted
+                loop
+                playsinline
+                preload="auto"
+              >
+                <source src="./videos/about-me.mp4" type="video/mp4" />
+              </video>
+            </div>
 
             <div class="about-content reveal">
               <p class="lead">
@@ -569,6 +581,7 @@
             <div class="footer-bg" aria-hidden="true">
               <video
                 class="footer-video-bg"
+                data-loop-video
                 autoplay
                 muted
                 loop

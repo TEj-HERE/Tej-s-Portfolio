@@ -118,15 +118,16 @@ function setFooterYear() {
   if (y) y.textContent = String(new Date().getFullYear());
 }
 
-function setupFooterVideoBg() {
-  const v = document.querySelector(".footer-video-bg");
-  if (!v) return;
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    v.pause();
-    v.removeAttribute("autoplay");
-    return;
-  }
-  v.play().catch(() => {});
+function setupLoopVideos() {
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  document.querySelectorAll("video[data-loop-video]").forEach((v) => {
+    if (reduced) {
+      v.pause();
+      v.removeAttribute("autoplay");
+      return;
+    }
+    v.play().catch(() => {});
+  });
 }
 
 function setYouTubeLink() {
@@ -1419,7 +1420,7 @@ function main() {
   setupReveal();
   setupHeroButton();
   setFooterYear();
-  setupFooterVideoBg();
+  setupLoopVideos();
   setYouTubeLink();
   initThreeBackground();
   initNodeNetwork();

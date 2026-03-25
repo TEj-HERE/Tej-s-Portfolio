@@ -502,12 +502,21 @@ img {
   position: relative;
   overflow: hidden;
 }
-.about-photo-image {
-  background:
-    linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.4) 100%),
-    url("./images/jetech-jetbox.png") center / cover no-repeat;
+.about-photo-video {
+  padding: 0;
 }
-.about-photo::after {
+.about-photo-video .about-video-bg {
+  z-index: 0;
+}
+.about-photo-video::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent 45%, rgba(0, 0, 0, 0.38) 100%);
+}
+.about-photo:not(.about-photo-video)::after {
   content: "Photo";
   position: absolute;
   inset: auto auto 18px 18px;
@@ -518,9 +527,6 @@ img {
   border: 1px solid rgba(255, 255, 255, 0.12);
   padding: 8px 12px;
   border-radius: 999px;
-}
-.about-photo-image::after {
-  content: none;
 }
 .about-content {
   border-radius: var(--radius);
@@ -1345,13 +1351,14 @@ img {
   inset: 0;
   z-index: 0;
 }
-.footer-video-bg {
+.footer-video-bg,
+.about-video-bg {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* Subject sits lower/left in frame — bias up to keep forehead / top of head in view */
+  /* Same crop for About + footer (subject lower-left in frame) */
   object-position: 22% 38%;
   pointer-events: none;
 }
@@ -1373,11 +1380,15 @@ img {
   padding: 48px 20px 28px;
 }
 @media (prefers-reduced-motion: reduce) {
-  .footer-video-bg {
+  .footer-video-bg,
+  .about-video-bg {
     display: none;
   }
   .footer-bg-scrim {
     background: rgba(5, 8, 12, 0.92);
+  }
+  .about-photo-video::after {
+    background: transparent;
   }
 }
 
