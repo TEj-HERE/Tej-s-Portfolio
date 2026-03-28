@@ -104,18 +104,26 @@
           </div>
 
           <div class="about-grid">
-            <div class="about-photo about-photo-video reveal" aria-label="Tej — intro video">
+            <div class="about-photo about-photo-video reveal">
               <video
+                id="about-intro-video"
                 class="about-video-bg"
                 data-loop-video
+                data-tap-audio
+                tabindex="0"
                 autoplay
                 muted
                 loop
                 playsinline
                 preload="auto"
+                aria-label="Intro video — tap to turn sound on or off"
               >
-                <source src="./videos/about-me.mp4" type="video/mp4" />
+                <source src="./videos/about-portrait.mp4" type="video/mp4" />
               </video>
+              <div class="about-video-hint" aria-hidden="true">
+                <span class="about-video-hint-muted">Tap for sound</span>
+                <span class="about-video-hint-unmuted">Tap to mute</span>
+              </div>
             </div>
 
             <div class="about-content reveal">
