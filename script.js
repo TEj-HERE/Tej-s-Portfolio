@@ -1359,6 +1359,10 @@ const PROJECT_OVERLAYS = {
       { src: "./images/jetech-1.png", alt: "Building the JetBox robotic arm kit" },
     ],
     slideshow: false,
+    externalSite: {
+      url: "https://jetechlabs.vercel.app/",
+      label: "Take a look — JetBox site",
+    },
     takeaways: [
       "End-to-end operations: product design, component sourcing, video curriculum, digital marketing",
       "Produced step-by-step video tutorials reaching thousands of learners globally",
@@ -1391,6 +1395,8 @@ function setupProjectOverlays() {
   const contentEl = overlay?.querySelector(".project-overlay-content");
   const videoLinksWrap = document.getElementById("project-overlay-video-links-wrap");
   const videoLinksEl = document.getElementById("project-overlay-video-links");
+  const siteWrap = document.getElementById("project-overlay-site-wrap");
+  const siteLink = document.getElementById("project-overlay-site-link");
 
   if (!overlay || !titleEl || !slidesContainer) return;
 
@@ -1464,6 +1470,21 @@ function setupProjectOverlays() {
       } else {
         videoLinksWrap.hidden = true;
         videoLinksEl.innerHTML = "";
+      }
+    }
+    if (siteWrap && siteLink) {
+      const ext = data.externalSite;
+      const url = ext?.url?.trim();
+      if (url) {
+        siteWrap.hidden = false;
+        siteLink.href = url;
+        siteLink.textContent = ext.label || "Visit website";
+        siteLink.setAttribute("aria-label", `${ext.label || "Visit website"} (opens in new tab)`);
+      } else {
+        siteWrap.hidden = true;
+        siteLink.removeAttribute("href");
+        siteLink.textContent = "";
+        siteLink.removeAttribute("aria-label");
       }
     }
   };
