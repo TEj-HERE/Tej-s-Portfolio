@@ -1387,6 +1387,26 @@ const PROJECT_OVERLAYS = {
     ],
     tags: ["PCB Design", "Power Electronics", "Altium", "Soldering"],
   },
+  "battery-packs": {
+    title: "Battery Pack Creation & Power Management",
+    desc: "Hands-on experience building safe lithium-ion packs — BMS integration, insulation, mechanical retention, and verified connections — plus DC-DC converters to deliver stable rails for embedded and robotics projects.",
+    images: [
+      {
+        src: "./images/battery-pack-1.png",
+        alt: "2s2p 18650 pack feeding an XL6009 DC-DC converter module",
+      },
+      { src: "./images/battery-pack-2.png", alt: "Soldering and assembling 18650 cells into a taped pack" },
+      { src: "./images/battery-pack-3.png", alt: "2s2p pack with BMS board and heavy-gauge power wiring" },
+      { src: "./images/battery-pack-4.png", alt: "18650 cells beside a high-current DC-DC step-down converter" },
+    ],
+    takeaways: [
+      "Prioritized safety: appropriate BMS, insulation, strain relief, and checks before load",
+      "Built multiple packs; centerpiece build is a compact 2s2p 18650 configuration",
+      "Routinely used DC-DC step-down converters to match voltage and current needs per project",
+      "Sharpened system-level thinking for supply design and component selection",
+    ],
+    tags: ["BMS", "18650", "DC-DC", "Power Systems"],
+  },
   jetech: {
     title: "JETech Labs",
     desc: "Founded a robotics STEAM education startup — built the full product, curriculum, and subscription model from scratch to deliver hands-on electronics kits to youth learners.",

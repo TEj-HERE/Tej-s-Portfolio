@@ -780,14 +780,18 @@ img {
   filter: saturate(1.1);
 }
 
-/* Projects */
+/* Projects — flex + centered wrap so incomplete last rows (e.g. 2 cards) stay centered */
 .cards-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 18px;
+  --cards-gap: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--cards-gap);
 }
-.card-6dof {
-  grid-column: 2 / 3;
+.cards-grid .card {
+  flex: 0 0 calc((100% - 2 * var(--cards-gap)) / 3);
+  max-width: calc((100% - 2 * var(--cards-gap)) / 3);
+  min-width: 0;
 }
 .card {
   border-radius: var(--radius);
@@ -1743,8 +1747,9 @@ img {
 
 /* Responsive */
 @media (max-width: 920px) {
-  .cards-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .cards-grid .card {
+    flex: 0 0 calc((100% - var(--cards-gap)) / 2);
+    max-width: calc((100% - var(--cards-gap)) / 2);
   }
   .hero-inner {
     padding-top: 96px;
@@ -1833,11 +1838,9 @@ img {
     margin-inline: auto;
     margin-top: 0;
   }
-  .cards-grid {
-    grid-template-columns: 1fr;
-  }
-  .card-6dof {
-    grid-column: auto;
+  .cards-grid .card {
+    flex: 0 0 100%;
+    max-width: 100%;
   }
   .section {
     padding: 78px 0;
