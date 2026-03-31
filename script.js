@@ -1368,7 +1368,7 @@ const PROJECT_OVERLAYS = {
     slideshow: false,
     buildVideos: [
       { label: "Prototype 1", url: "https://www.youtube.com/shorts/2TMexDI5K8g" },
-      { label: "Prototype 2", url: "" },
+      { label: "Prototype 2", url: "https://www.youtube.com/shorts/93z08uypJ_4" },
       { label: "Final Build", url: "" },
     ],
     takeaways: [
