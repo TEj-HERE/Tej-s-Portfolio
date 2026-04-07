@@ -1362,7 +1362,7 @@ const PROJECT_OVERLAYS = {
     images: [
       {
         src: "./images/ai-desk-robot-hero.png",
-        alt: "Red 3D-printed arm with LED matrix, labeled servo axes A0–A3, Arduino Uno and wiring on desk",
+        alt: "Red 3D-printed arm with LED matrix head, servos and harness wiring, annotated A2 and A3",
       },
     ],
     slideshow: false,
