@@ -1358,11 +1358,11 @@ const PROJECT_OVERLAYS = {
   },
   "ai-desk-robot": {
     title: "AI Desk Robot",
-    desc: "PyTorch-powered robot arm that passively detects user distraction and inactivity using computer vision and ML inference on edge hardware.",
+    desc: "Desktop robot that tracks distraction using Python, a YOLO model for phone detection, and OpenCV — with an Arduino Uno coordinating servos and LED matrix feedback.",
     images: [
       {
-        src: "./images/ai-desk-robot-prototype-1.png",
-        alt: "First prototype: red 3D-printed base, cardboard arm, and blue LED matrix face",
+        src: "./images/ai-desk-robot-hero.png",
+        alt: "Red 3D-printed arm with LED matrix, labeled servo axes A0–A3, Arduino Uno and wiring on desk",
       },
     ],
     slideshow: false,
@@ -1372,10 +1372,11 @@ const PROJECT_OVERLAYS = {
       { label: "Final Build", url: "" },
     ],
     takeaways: [
-      "Applied PyTorch and OpenCV for real-time computer vision on Raspberry Pi",
-      "Edge ML inference for low-latency distraction detection",
+      "YOLO-based phone detection in Python paired with OpenCV for the vision pipeline",
+      "Arduino Uno for servo control and hardware integration with the arm and LED matrix",
+      "End-to-end edge-style setup: CV in software, motion and feedback on the microcontroller",
     ],
-    tags: ["PyTorch", "OpenCV", "Raspberry Pi"],
+    tags: ["Arduino Uno", "YOLO", "OpenCV", "Python"],
   },
   "dc-dc-servo": {
     title: "DC-DC Servo Power Board",
