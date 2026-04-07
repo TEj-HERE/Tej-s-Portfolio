@@ -845,6 +845,10 @@ img {
   object-fit: cover;
   display: block;
 }
+/* AI Desk Robot: bias crop upward so the arm / annotations sit higher in the card */
+.card[data-project-overlay="ai-desk-robot"] .card-media > img:only-child {
+  object-position: center 22%;
+}
 
 /* Hover slideshow */
 
