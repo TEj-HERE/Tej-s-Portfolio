@@ -2077,7 +2077,7 @@ img {
   gap: 14px;
 }
 .reach-globe-stats--blocks .reach-stat--span .reach-stat-label {
-  text-align: left;
+  text-align: center;
 }
 .reach-globe-stats--blocks > .reach-stat {
   min-height: 68px;
@@ -2086,10 +2086,11 @@ img {
   position: relative;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
   gap: 6px;
   padding: 13px 14px;
+  text-align: center;
   border-radius: 11px;
   border: 1px solid rgba(0, 255, 160, 0.22);
   background:
@@ -2127,6 +2128,7 @@ img {
   color: #fff;
   font-variant-numeric: tabular-nums;
   line-height: 1;
+  text-align: center;
 }
 .reach-stat-label {
   font-size: 10px;
@@ -2135,6 +2137,7 @@ img {
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.52);
   line-height: 1.2;
+  text-align: center;
 }
 .reach-stat--sponsors {
   grid-column: 1 / -1;
