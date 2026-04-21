@@ -2355,3 +2355,286 @@ img {
   .reach-globe-pin-value { font-size: 10.5px; }
   .reach-globe-pin-label { display: none; }
 }
+
+/* =====================================================================
+   Editorial Engineering refinement layer
+   Goal: trade "vibe-coded bubble soup" for a calmer, more technical feel.
+   - Softer, squarer radii on small chrome (pills -> precise corners).
+   - JetBrains Mono on technical metadata (kickers, labels, tags, dates).
+   - Neon dialed back: thinner borders, restrained glow, single-accent.
+   - Kept: nav pill, card structure, 3D canvases, overlay, reach globe.
+   ===================================================================== */
+:root {
+  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --accent: #6bffb5;           /* muted version of the neon green */
+  --accent-dim: rgba(107, 255, 181, 0.55);
+  --hairline: rgba(255, 255, 255, 0.08);
+  --hairline-strong: rgba(255, 255, 255, 0.14);
+  --r-sm: 4px;
+  --r-md: 6px;
+  --r-lg: 10px;
+}
+
+/* --- Typography: mono for metadata / technical labels --- */
+.tag,
+.tl-date,
+.edu-meta,
+.achievement-sub,
+.project-overlay-video-links-label,
+.project-overlay-takeaways-label {
+  font-family: var(--mono);
+  font-feature-settings: "ss01", "cv11";
+}
+
+/* --- De-pill small chrome (tags only; badges keep their original pill) --- */
+.tag {
+  border-radius: var(--r-sm);
+  font-weight: 500;
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: transparent;
+  border: 1px solid var(--hairline-strong);
+  color: rgba(255, 255, 255, 0.78);
+  padding: 6px 10px;
+}
+
+.btn {
+  border-radius: var(--r-md);
+  letter-spacing: 0.02em;
+}
+.btn-small {
+  border-radius: var(--r-sm);
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 10px 14px;
+  font-family: var(--mono);
+}
+
+/* Slideshow / UI dots stay circular (they should be round), but trim glow */
+.slide-dot.active {
+  box-shadow: none;
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.slide-arrow {
+  border-radius: var(--r-sm);
+}
+.slide-arrow:hover {
+  background: rgba(0, 0, 0, 0.62);
+  border-color: var(--accent-dim);
+  color: #fff;
+}
+
+/* Contact icon links: square with rounded corners, no glow bloom */
+.icon-link {
+  border-radius: var(--r-md);
+  border-color: var(--hairline-strong);
+  background: rgba(255, 255, 255, 0.02);
+}
+.icon-link:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent-dim);
+  box-shadow: none;
+}
+
+/* Achievement chips: flatter, mono sub-line */
+.achievement-chip {
+  border-radius: var(--r-md);
+  border-color: var(--hairline-strong);
+  background: rgba(255, 255, 255, 0.015);
+}
+.achievement-chip:hover {
+  border-color: var(--accent-dim);
+  box-shadow: none;
+  background: rgba(255, 255, 255, 0.03);
+}
+.achievement-title {
+  font-weight: 600;
+  letter-spacing: -0.005em;
+}
+.achievement-sub {
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Reach-globe section: original styling preserved (per request). */
+
+/* Hero CTA and .btn-primary: original aurora/shimmer/particle treatment
+   is intentionally preserved (per request). Only structural refinements
+   below apply (e.g. overall .btn radius when relevant). */
+
+/* Project-overlay "visit site" button: no pulsing aurora */
+.project-overlay-site-btn {
+  animation: none !important;
+  background: rgba(107, 255, 181, 0.06);
+  border: 1px solid var(--accent-dim);
+  box-shadow: 0 0 0 1px rgba(107, 255, 181, 0.1) inset, 0 6px 22px rgba(0, 0, 0, 0.4);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-family: var(--mono);
+  border-radius: var(--r-md);
+}
+.project-overlay-site-btn:hover {
+  animation: none !important;
+  filter: none;
+  border-color: var(--accent);
+  box-shadow:
+    0 0 0 1px rgba(107, 255, 181, 0.22) inset,
+    0 8px 26px rgba(0, 0, 0, 0.5),
+    0 0 22px rgba(107, 255, 181, 0.18);
+}
+
+/* Card CTA "View Project" button: keep sharp (4px) corners but let the
+   original green+blue gradient and hover glow cascade through. */
+
+/* Card: reduce green bloom on hover; use crisp hairline + subtle lift */
+.card {
+  border-radius: var(--r-lg);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+.card:hover {
+  border-color: var(--accent-dim);
+  box-shadow:
+    0 14px 40px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(107, 255, 181, 0.1) inset;
+}
+.card h3 {
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+
+/* About content card: squarer, flatter */
+.about-content {
+  border-radius: var(--r-lg);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+/* Timeline node: small square, not a glowing orb */
+.tl-card {
+  border-radius: var(--r-lg);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+.tl-card::before {
+  width: 8px;
+  height: 8px;
+  border-radius: 1px;
+  background: var(--accent);
+  box-shadow: 0 0 10px rgba(107, 255, 181, 0.45);
+}
+.tl-org {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.tl-role {
+  color: var(--accent);
+  font-weight: 500;
+  font-size: 12.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-family: var(--mono);
+}
+.tl-date {
+  font-weight: 500;
+  font-size: 11.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.52);
+}
+
+/* Education card: same treatment */
+.edu-card {
+  border-radius: var(--r-lg);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+.edu-school {
+  color: var(--accent);
+  font-weight: 700;
+}
+.edu-meta {
+  font-weight: 500;
+  font-size: 11.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.52);
+}
+
+/* Nav: keep the pill, but mute the dot and slim borders */
+.brand-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 1px;
+  background: var(--accent);
+  box-shadow: 0 0 10px rgba(107, 255, 181, 0.45);
+}
+.nav-links a {
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+/* Section-alt: original dual-color radial wash is preserved (per request). */
+
+/* Scroll indicator: square with soft dot */
+.scroll-indicator {
+  border-radius: var(--r-sm);
+  border-color: var(--hairline-strong);
+  background: transparent;
+}
+.scroll-dot {
+  background: var(--accent);
+  box-shadow: none;
+}
+
+/* Contact card: squarer, quieter */
+.contact-card {
+  border-radius: var(--r-lg);
+  border-color: var(--hairline-strong);
+  box-shadow: 0 14px 50px rgba(0, 0, 0, 0.45);
+}
+.contact-email a {
+  text-decoration-color: var(--accent-dim);
+}
+
+/* Hero title / kicker / subtitle: original styling preserved (per request). */
+
+/* Section headings: technical subheads */
+.section-head h2 {
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+.section-head p {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Reach globe CTA button: original styling preserved (per request). */
+.reach-globe-cta {
+  border-radius: 999px; /* restore pill for the reach-globe section */
+}
+
+/* Hero CTA: restore original pill shape (the .btn override below would
+   otherwise give it a 6px radius). */
+.btn-hero-cta {
+  border-radius: 999px;
+}
+
+/* Disable custom cursor on touch-primary devices (no-op on desktop) */
+@media (pointer: coarse) {
+  * { cursor: auto !important; }
+  .cur-dot, .cur-ring { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project-overlay-site-btn {
+    animation: none !important;
+  }
+}
+
