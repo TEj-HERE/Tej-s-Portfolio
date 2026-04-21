@@ -533,7 +533,7 @@ img {
   margin-top: 14px;
 }
 
-/* View Project (project overlay) — wrapper + canvas particles (JS) */
+/* View Project (project overlay) - wrapper + canvas particles (JS) */
 .card-cta-wrap {
   position: relative;
   display: inline-block;
@@ -624,7 +624,7 @@ img {
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-/* Experience — aurora field (canvas); content above */
+/* Experience - aurora field (canvas); content above */
 .experience-section {
   position: relative;
   overflow: hidden;
@@ -641,6 +641,10 @@ img {
 .experience-section-inner {
   position: relative;
   z-index: 1;
+}
+.experience-section-intro {
+  text-wrap: pretty;
+  max-width: 36rem;
 }
 
 .section-head {
@@ -684,7 +688,7 @@ img {
   position: relative;
   overflow: hidden;
 }
-/* Portrait intro (e.g. 1080×1920) — 9 : 16 */
+/* Portrait intro (e.g. 1080×1920) - 9 : 16 */
 .about-photo.about-photo-video {
   min-height: 0;
   width: clamp(260px, 28vw, 360px);
@@ -780,7 +784,7 @@ img {
   filter: saturate(1.1);
 }
 
-/* Projects — flex + centered wrap so incomplete last rows (e.g. 2 cards) stay centered */
+/* Projects - flex + centered wrap so incomplete last rows (e.g. 2 cards) stay centered */
 .cards-grid {
   --cards-gap: 18px;
   display: flex;
@@ -1281,7 +1285,7 @@ img {
   }
 }
 
-/* Too Young To Learn All — featured */
+/* Too Young To Learn All - featured */
 .tytla-featured {
   margin-bottom: 48px;
   padding: 32px 28px;
@@ -1937,3 +1941,397 @@ img {
   .cur-dot, .cur-ring { display: none; }
 }
 
+/* ─── Reach Globe (combined TYTLA channel + interactive footprint) ────── */
+.reach-globe {
+  position: relative;
+  margin-top: 16px;
+  margin-inline: auto;
+  width: 100%;
+  max-width: min(900px, 100%);
+  padding: 20px 22px 22px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(0, 255, 160, 0.18);
+  background:
+    radial-gradient(circle at 18% 20%, rgba(0, 255, 136, 0.08), transparent 55%),
+    radial-gradient(circle at 80% 78%, rgba(0, 136, 255, 0.08), transparent 60%),
+    rgba(8, 12, 16, 0.55);
+  box-shadow:
+    0 28px 70px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset,
+    0 0 60px rgba(0, 255, 136, 0.06) inset;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.reach-globe::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(120deg, rgba(0, 255, 136, 0.07), transparent 45%);
+  opacity: 0.6;
+}
+.reach-globe-header {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+.reach-globe-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(0, 255, 160, 0.88);
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(0, 255, 160, 0.08);
+  border: 1px solid rgba(0, 255, 160, 0.35);
+  text-shadow: 0 0 10px rgba(0, 255, 160, 0.45);
+}
+.reach-globe-eyebrow::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--green);
+  box-shadow: 0 0 8px rgba(0, 255, 160, 0.9);
+  animation: reachPulse 1.8s ease-in-out infinite;
+}
+.reach-globe-title {
+  margin: 4px 0 2px;
+  font-size: clamp(26px, 3vw, 34px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  text-shadow: 0 0 26px rgba(0, 255, 136, 0.18);
+}
+.reach-globe-subtitle {
+  margin: 0;
+  color: var(--green);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.reach-globe-body {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(248px, 360px) minmax(260px, 1fr);
+  gap: 18px 24px;
+  align-items: stretch;
+}
+.reach-globe-side {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  justify-content: flex-start;
+  min-width: 0;
+  width: 100%;
+}
+.reach-globe-cta {
+  align-self: stretch;
+  text-align: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Stat blocks - 2×2 + countries + sponsors; stretches with globe row for symmetry */
+.reach-globe-stats {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.reach-globe-stats--blocks {
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr auto auto;
+  gap: 9px;
+  min-height: 0;
+}
+.reach-globe-stats--blocks .reach-stat--span {
+  grid-column: 1 / -1;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+.reach-globe-stats--blocks .reach-stat--span .reach-stat-label {
+  text-align: left;
+}
+.reach-globe-stats--blocks > .reach-stat {
+  min-height: 68px;
+}
+.reach-stat {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 6px;
+  padding: 13px 14px;
+  border-radius: 11px;
+  border: 1px solid rgba(0, 255, 160, 0.22);
+  background:
+    linear-gradient(145deg, rgba(0, 255, 160, 0.07) 0%, transparent 55%),
+    rgba(4, 8, 12, 0.72);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset,
+    0 14px 36px rgba(0, 0, 0, 0.35);
+  transition: border-color 0.22s ease, box-shadow 0.22s ease, transform 0.22s ease;
+}
+.reach-stat::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 14px;
+  right: 14px;
+  height: 2px;
+  border-radius: 0 0 3px 3px;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 160, 0.55), transparent);
+  opacity: 0.75;
+  pointer-events: none;
+}
+.reach-globe .reach-stat:hover {
+  border-color: rgba(0, 255, 160, 0.45);
+  box-shadow:
+    0 0 0 1px rgba(0, 255, 160, 0.12) inset,
+    0 18px 44px rgba(0, 0, 0, 0.42),
+    0 0 28px rgba(0, 255, 160, 0.1);
+  transform: translateY(-2px);
+}
+.reach-stat-value {
+  font-size: clamp(1.2rem, 2vw, 1.48rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+.reach-stat-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.52);
+  line-height: 1.2;
+}
+.reach-stat--sponsors {
+  grid-column: 1 / -1;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  min-height: 0;
+  padding: 13px 15px;
+}
+.reach-stat--sponsors .reach-stat-value {
+  font-size: clamp(1.35rem, 2.2vw, 1.65rem);
+}
+.reach-stat-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+  text-align: right;
+}
+.reach-stat-sub {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: rgba(0, 255, 160, 0.9);
+  line-height: 1.25;
+}
+
+.reach-globe-stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  max-width: min(460px, 100%);
+  margin-inline: auto;
+  border-radius: 18px;
+  overflow: hidden;
+  cursor: grab;
+  background:
+    radial-gradient(circle at 50% 54%, rgba(0, 255, 136, 0.07), transparent 55%),
+    radial-gradient(circle at 50% 50%, rgba(0, 136, 255, 0.05), transparent 60%),
+    rgba(6, 10, 14, 0.3);
+  border: 1px solid rgba(0, 255, 160, 0.12);
+  box-shadow:
+    0 0 40px rgba(0, 255, 160, 0.08) inset,
+    0 18px 45px rgba(0, 0, 0, 0.35);
+  transition: border-color 260ms ease, box-shadow 260ms ease;
+}
+.reach-globe.is-hover .reach-globe-stage {
+  border-color: rgba(0, 255, 160, 0.36);
+  box-shadow:
+    0 0 52px rgba(0, 255, 160, 0.18) inset,
+    0 22px 55px rgba(0, 255, 136, 0.08);
+}
+.reach-globe.is-dragging .reach-globe-stage {
+  cursor: grabbing;
+}
+.reach-globe-stage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 100%, rgba(0, 0, 0, 0.45), transparent 60%);
+}
+.reach-globe-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+/* Pins tracked to real lat/lon points on the globe surface
+   (position + opacity are updated each frame from script.js). */
+.reach-globe-pin {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 9px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 255, 160, 0.48);
+  background: rgba(6, 10, 14, 0.85);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  white-space: nowrap;
+  z-index: 3;
+  pointer-events: none;
+  opacity: 0;
+  box-shadow:
+    0 6px 18px rgba(0, 0, 0, 0.45),
+    0 0 12px rgba(0, 255, 160, 0.22);
+  will-change: transform, opacity;
+  transition: border-color 260ms ease, box-shadow 260ms ease;
+  transform: translate3d(-9999px, -9999px, 0);
+}
+.reach-globe.is-hover .reach-globe-pin {
+  border-color: rgba(0, 255, 160, 0.7);
+  box-shadow:
+    0 8px 22px rgba(0, 0, 0, 0.5),
+    0 0 18px rgba(0, 255, 160, 0.32);
+}
+.reach-globe-pin-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--green);
+  box-shadow: 0 0 10px rgba(0, 255, 160, 0.95);
+  animation: reachPulse 1.8s ease-in-out infinite;
+  flex-shrink: 0;
+}
+.reach-globe-pin-dot.is-home {
+  background: var(--blue);
+  box-shadow: 0 0 10px rgba(88, 182, 255, 0.95);
+}
+.reach-globe-pin-text {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: var(--green);
+  text-shadow: 0 0 8px rgba(0, 255, 136, 0.35);
+  line-height: 1;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+}
+.reach-globe-pin-value {
+  font-size: 12.5px;
+  font-weight: 800;
+  color: #ffffff;
+  text-shadow: 0 0 10px rgba(0, 255, 160, 0.45);
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+}
+.reach-globe-pin-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(0, 255, 160, 0.85);
+  text-shadow: 0 0 6px rgba(0, 255, 136, 0.3);
+}
+.reach-globe-pin-dot.is-home + .reach-globe-pin-text .reach-globe-pin-value {
+  text-shadow: 0 0 10px rgba(88, 182, 255, 0.55);
+}
+.reach-globe-pin-dot.is-home + .reach-globe-pin-text .reach-globe-pin-label {
+  color: #cfe8ff;
+  text-shadow: 0 0 6px rgba(88, 182, 255, 0.4);
+}
+
+@keyframes reachPulse {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50%      { transform: scale(1.45); opacity: 1; }
+}
+
+.reach-globe.reach-globe-static .reach-globe-canvas { display: none; }
+.reach-globe.reach-globe-static .reach-globe-stage {
+  background:
+    radial-gradient(circle at 50% 50%, rgba(0, 255, 136, 0.24), transparent 55%),
+    radial-gradient(circle at 50% 50%, rgba(0, 136, 255, 0.1), transparent 75%),
+    rgba(6, 10, 14, 0.6);
+}
+
+@media (max-width: 920px) {
+  .reach-globe {
+    max-width: 100%;
+    padding: 18px 16px 20px;
+    gap: 14px;
+  }
+  .reach-globe-body {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    align-items: stretch;
+  }
+  .reach-globe-side {
+    order: -1;
+    max-width: min(100%, 480px);
+    margin-inline: auto;
+    width: 100%;
+  }
+  .reach-globe-stats--blocks > .reach-stat {
+    min-height: 64px;
+  }
+  .reach-globe-stage { max-width: min(380px, 100%); }
+  .reach-globe-pin { padding: 3px 7px; gap: 5px; }
+  .reach-globe-pin-value { font-size: 11px; }
+  .reach-globe-pin-label { font-size: 8.5px; letter-spacing: 0.1em; }
+}
+@media (max-width: 520px) {
+  .reach-globe-stats--blocks {
+    gap: 8px;
+  }
+  .reach-globe-stats--blocks > .reach-stat {
+    min-height: 0;
+    padding: 11px 12px;
+  }
+  .reach-stat--sponsors {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .reach-stat--sponsors .reach-stat-meta {
+    align-items: flex-start;
+    text-align: left;
+  }
+  .reach-globe-pin { padding: 3px 6px; }
+  .reach-globe-pin-value { font-size: 10.5px; }
+  .reach-globe-pin-label { display: none; }
+}

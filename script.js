@@ -142,7 +142,7 @@ function setupAboutVideoTapAudio() {
       wrap.classList.toggle("is-audio-on", soundOn);
       video.setAttribute(
         "aria-label",
-        soundOn ? "Intro video — tap to mute" : "Intro video — tap to turn sound on",
+        soundOn ? "Intro video - tap to mute" : "Intro video - tap to turn sound on",
       );
     };
 
@@ -521,7 +521,7 @@ function initNodeNetwork() {
   if (!canvas) return;
   const ctx = canvas.getContext("2d");
 
-  // Palette — green / blue / teal / soft-white only
+  // Palette - green / blue / teal / soft-white only
   const C = {
     green: { r: 0,   g: 255, b: 136 },
     blue:  { r: 0,   g: 136, b: 255 },
@@ -617,7 +617,7 @@ function initNodeNetwork() {
 
     ctx.save();
     if (n.shape === 0) {
-      // Diamond — hollow with bright fill
+      // Diamond - hollow with bright fill
       pathDiamond(n.x, n.y, s * 1.3, n.angle);
       ctx.strokeStyle = colStr(col, 0.9 * lit);
       ctx.lineWidth   = 1.4;
@@ -663,7 +663,7 @@ function initNodeNetwork() {
     const sweep = (t * 0.014) % (Math.PI * 2);
     const sweepLen = Math.PI * 0.65;
     const sweepGrad = ctx.createConicalGradient
-      ? null // not standard — do it with arc instead
+      ? null // not standard - do it with arc instead
       : null;
     ctx.save();
     ctx.translate(x, y);
@@ -901,7 +901,7 @@ function initNodeNetwork() {
       ctx.lineWidth = 1.0;
       ctx.stroke();
 
-      // Pulse 1 — bright dot
+      // Pulse 1 - bright dot
       const p1x = na.x + dx * e.p1, p1y = na.y + dy * e.p1;
       drawGlow(p1x, p1y, 8, ca, fade * 0.55 * edgeDim);
       ctx.beginPath();
@@ -909,7 +909,7 @@ function initNodeNetwork() {
       ctx.fillStyle = colStr(ca, fade * 0.95 * edgeDim);
       ctx.fill();
 
-      // Pulse 2 — dimmer
+      // Pulse 2 - dimmer
       const p2x = na.x + dx * e.p2, p2y = na.y + dy * e.p2;
       ctx.beginPath();
       ctx.arc(p2x, p2y, 1.6, 0, Math.PI * 2);
@@ -971,7 +971,7 @@ function initExperienceAurora() {
   let raf = 0;
   let visible = false;
 
-  const UI_DIM_SEL = ".section-head, .tytla-featured, .tl-card";
+  const UI_DIM_SEL = ".section-head, .tl-card, .reach-globe";
 
   const LINE_COUNT = 8;
   const SEGS = 36;
@@ -1328,17 +1328,17 @@ function setupCustomCursor() {
 const PROJECT_OVERLAYS = {
   rocket: {
     title: "Rocket Flight Computer PCB",
-    desc: "Custom flight-computer PCB designed from scratch for the Arbalest Rocketry Team at York University — avionics, sensor integration (IMU, barometer, GPS), and control systems for competitive rocketry.",
+    desc: "Custom flight-computer PCB designed from scratch for the Arbalest Rocketry Team at York University - avionics, sensor integration (IMU, barometer, GPS), and control systems for competitive rocketry.",
     images: [
       { src: "./images/rocket-pcb-1.png", alt: "Rocket PCB schematic" },
       { src: "./images/rocket-pcb-3d.png", alt: "3D render of rocket flight computer PCB" },
-      { src: "./images/rocket-pcb-board-photo.png", alt: "Flight computer PCB — assembled board photo" },
+      { src: "./images/rocket-pcb-board-photo.png", alt: "Flight computer PCB - assembled board photo" },
       { src: "./images/rocket-pcb-2.png", alt: "Reviewing rocket PCB schematic" },
       { src: "./images/rocket-pcb-layout.png", alt: "Rocket PCB layout" },
     ],
     takeaways: [
       "Coordinated design reviews with the electrical hardware team to validate schematics and layouts",
-      "Designed for high-vibration, low-noise environments — stable power regulation under flight conditions",
+      "Designed for high-vibration, low-noise environments - stable power regulation under flight conditions",
       "Drove cross-subteam integration (avionics, propulsion, software) for system-level compatibility and safety compliance",
       "Expanded skills independently: learned SolidWorks and 3D printing for functional components",
     ],
@@ -1358,7 +1358,7 @@ const PROJECT_OVERLAYS = {
   },
   "ai-desk-robot": {
     title: "AI Desk Robot",
-    desc: "Desktop robot that tracks distraction using Python, a YOLO model for phone detection, and OpenCV — with an Arduino Uno coordinating servos and LED matrix feedback.",
+    desc: "Desktop robot that tracks distraction using Python, a YOLO model for phone detection, and OpenCV - with an Arduino Uno coordinating servos and LED matrix feedback.",
     images: [
       {
         src: "./images/ai-desk-robot-hero.png",
@@ -1369,7 +1369,7 @@ const PROJECT_OVERLAYS = {
     buildVideos: [
       { label: "Prototype 1", url: "https://www.youtube.com/shorts/2TMexDI5K8g" },
       { label: "Prototype 2", url: "https://www.youtube.com/shorts/93z08uypJ_4" },
-      { label: "Final Build", url: "" },
+      { label: "Final Build", url: "https://www.youtube.com/shorts/93z08uypJ_4" },
     ],
     takeaways: [
       "YOLO-based phone detection in Python paired with OpenCV for the vision pipeline",
@@ -1390,7 +1390,7 @@ const PROJECT_OVERLAYS = {
   },
   "battery-packs": {
     title: "Battery Pack Creation & Power Management",
-    desc: "Hands-on experience building safe lithium-ion packs — BMS integration, insulation, mechanical retention, and verified connections — plus DC-DC converters to deliver stable rails for embedded and robotics projects.",
+    desc: "Hands-on experience building safe lithium-ion packs - BMS integration, insulation, mechanical retention, and verified connections - plus DC-DC converters to deliver stable rails for embedded and robotics projects.",
     images: [
       {
         src: "./images/battery-pack-1.png",
@@ -1410,7 +1410,7 @@ const PROJECT_OVERLAYS = {
   },
   jetech: {
     title: "JETech Labs",
-    desc: "Founded a robotics STEAM education startup — built the full product, curriculum, and subscription model from scratch to deliver hands-on electronics kits to youth learners.",
+    desc: "Founded a robotics STEAM education startup - built the full product, curriculum, and subscription model from scratch to deliver hands-on electronics kits to youth learners.",
     images: [
       { src: "./images/jetech-jetbox.png", alt: "JetBox Gen 1 kits at JETech Labs" },
       { src: "./images/jetech-1.png", alt: "Building the JetBox robotic arm kit" },
@@ -1418,7 +1418,7 @@ const PROJECT_OVERLAYS = {
     slideshow: false,
     externalSite: {
       url: "https://jetechlabs.vercel.app/",
-      label: "Take a look — JetBox site",
+      label: "Take a look - JetBox site",
     },
     takeaways: [
       "End-to-end operations: product design, component sourcing, video curriculum, digital marketing",
@@ -1818,6 +1818,467 @@ function setupCardSlideshows() {
   });
 }
 
+/**
+ * Experience - interactive "reach globe". Wireframe globe, orbital HUD rings,
+ * soft star field, surface dots, arcs from Toronto to major cities, stat pins,
+ * idle rotation, and drag-to-spin.
+ */
+function initReachGlobe() {
+  const root = document.querySelector("[data-reach-globe]");
+  const canvas = document.querySelector("[data-reach-globe-canvas]");
+  if (!root || !(canvas instanceof HTMLCanvasElement)) return;
+  if (typeof THREE === "undefined") return;
+
+  if (state.reduceMotion) {
+    root.classList.add("reach-globe-static");
+    return;
+  }
+
+  const GREEN = 0x00ff88;
+  const BLUE = 0x58b6ff;
+  const WHITE = 0xffffff;
+
+  const renderer = new THREE.WebGLRenderer({
+    canvas,
+    alpha: true,
+    antialias: true,
+    powerPreference: "high-performance",
+  });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setClearColor(0x000000, 0);
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 50);
+  camera.position.set(0, 0, 5.2);
+
+  scene.add(new THREE.AmbientLight(0xffffff, 0.45));
+  const keyLight = new THREE.PointLight(GREEN, 1.6, 18, 1.7);
+  keyLight.position.set(3, 2.5, 3);
+  scene.add(keyLight);
+  const rimLight = new THREE.PointLight(BLUE, 1.0, 20, 1.8);
+  rimLight.position.set(-3, -1.5, 2);
+  scene.add(rimLight);
+
+  const globe = new THREE.Group();
+  scene.add(globe);
+
+  const R = 1.35;
+
+  const core = new THREE.Mesh(
+    new THREE.SphereGeometry(R * 0.992, 48, 32),
+    new THREE.MeshStandardMaterial({
+      color: 0x04100a,
+      metalness: 0.6,
+      roughness: 0.35,
+      emissive: GREEN,
+      emissiveIntensity: 0.18,
+    }),
+  );
+  globe.add(core);
+
+  const latLines = new THREE.LineSegments(
+    new THREE.EdgesGeometry(new THREE.SphereGeometry(R, 32, 14)),
+    new THREE.LineBasicMaterial({ color: GREEN, transparent: true, opacity: 0.22 }),
+  );
+  globe.add(latLines);
+
+  const atmosphere = new THREE.Mesh(
+    new THREE.SphereGeometry(R * 1.12, 48, 32),
+    new THREE.MeshBasicMaterial({
+      color: GREEN,
+      transparent: true,
+      opacity: 0.05,
+      side: THREE.BackSide,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    }),
+  );
+  globe.add(atmosphere);
+
+  const latLonToVec3 = (lat, lon, r) => {
+    const phi = ((90 - lat) * Math.PI) / 180;
+    const theta = ((lon + 180) * Math.PI) / 180;
+    return new THREE.Vector3(
+      -r * Math.sin(phi) * Math.cos(theta),
+      r * Math.cos(phi),
+      r * Math.sin(phi) * Math.sin(theta),
+    );
+  };
+
+  const surface = R * 1.004;
+  const dotCount = 220;
+  const dotPositions = new Float32Array(dotCount * 3);
+  const dotColors = new Float32Array(dotCount * 3);
+  const gCol = new THREE.Color(GREEN);
+  const bCol = new THREE.Color(BLUE);
+  for (let i = 0; i < dotCount; i++) {
+    const lat = Math.acos(2 * Math.random() - 1) * (180 / Math.PI) - 90;
+    const lon = Math.random() * 360 - 180;
+    const v = latLonToVec3(lat, lon, surface);
+    dotPositions[i * 3] = v.x;
+    dotPositions[i * 3 + 1] = v.y;
+    dotPositions[i * 3 + 2] = v.z;
+    const c = Math.random() < 0.7 ? gCol : bCol;
+    dotColors[i * 3] = c.r;
+    dotColors[i * 3 + 1] = c.g;
+    dotColors[i * 3 + 2] = c.b;
+  }
+  const dotsGeo = new THREE.BufferGeometry();
+  dotsGeo.setAttribute("position", new THREE.BufferAttribute(dotPositions, 3));
+  dotsGeo.setAttribute("color", new THREE.BufferAttribute(dotColors, 3));
+  const dots = new THREE.Points(
+    dotsGeo,
+    new THREE.PointsMaterial({
+      size: 0.022,
+      transparent: true,
+      opacity: 0.85,
+      vertexColors: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+    }),
+  );
+  globe.add(dots);
+
+  // Orbital HUD rings - tilted ellipses around the globe; spin separately
+  // from the planet for a mission-control read.
+  const orbitGroup = new THREE.Group();
+  scene.add(orbitGroup);
+  const makeOrbitRing = (inner, outer, opacity) => {
+    const geo = new THREE.RingGeometry(inner, outer, 96);
+    const mat = new THREE.MeshBasicMaterial({
+      color: GREEN,
+      transparent: true,
+      opacity,
+      side: THREE.DoubleSide,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    return new THREE.Mesh(geo, mat);
+  };
+  const or1 = makeOrbitRing(1.38, 1.435, 0.12);
+  or1.rotation.x = Math.PI / 2;
+  orbitGroup.add(or1);
+  const or2 = makeOrbitRing(1.52, 1.565, 0.09);
+  or2.rotation.set(Math.PI / 2.4, 0, Math.PI / 6);
+  orbitGroup.add(or2);
+  const or3 = makeOrbitRing(1.66, 1.718, 0.07);
+  or3.rotation.set(Math.PI / 1.9, Math.PI / 4, -Math.PI / 8);
+  orbitGroup.add(or3);
+
+  // Soft star specks behind the globe for depth (parallax follows scene tilt).
+  const starCount = 100;
+  const starPos = new Float32Array(starCount * 3);
+  for (let i = 0; i < starCount; i++) {
+    const rad = 9 + Math.random() * 7;
+    const u = Math.random();
+    const v = Math.random();
+    const theta = 2 * Math.PI * u;
+    const phi = Math.acos(2 * v - 1);
+    starPos[i * 3] = rad * Math.sin(phi) * Math.cos(theta);
+    starPos[i * 3 + 1] = rad * Math.sin(phi) * Math.sin(theta);
+    starPos[i * 3 + 2] = rad * Math.cos(phi);
+  }
+  const starGeo = new THREE.BufferGeometry();
+  starGeo.setAttribute("position", new THREE.BufferAttribute(starPos, 3));
+  const starField = new THREE.Points(
+    starGeo,
+    new THREE.PointsMaterial({
+      color: 0xc8fff0,
+      size: 0.045,
+      transparent: true,
+      opacity: 0.4,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      sizeAttenuation: true,
+    }),
+  );
+  scene.add(starField);
+
+  const origin = { lat: 43.7, lon: -79.4, label: "Toronto" };
+  const destinations = [
+    { lat: 28.6, lon: 77.2 },
+    { lat: 35.7, lon: 139.7 },
+    { lat: 51.5, lon: -0.1 },
+    { lat: -33.9, lon: 151.2 },
+    { lat: -23.5, lon: -46.6 },
+    { lat: 34.0, lon: -118.2 },
+    { lat: 52.5, lon: 13.4 },
+    { lat: 1.35, lon: 103.8 },
+  ];
+
+  const originMarker = new THREE.Mesh(
+    new THREE.SphereGeometry(0.038, 16, 16),
+    new THREE.MeshBasicMaterial({ color: WHITE }),
+  );
+  originMarker.position.copy(latLonToVec3(origin.lat, origin.lon, surface));
+  globe.add(originMarker);
+
+  const arcs = [];
+  const arcOrigin = latLonToVec3(origin.lat, origin.lon, R);
+  destinations.forEach((dest, i) => {
+    const a = arcOrigin.clone();
+    const b = latLonToVec3(dest.lat, dest.lon, R);
+    const mid = a.clone().add(b).multiplyScalar(0.5);
+    const arcHeight = 0.45 + a.distanceTo(b) * 0.38;
+    mid.normalize().multiplyScalar(R + arcHeight);
+    const curve = new THREE.QuadraticBezierCurve3(a, mid, b);
+
+    const points = curve.getPoints(48);
+    const arcGeo = new THREE.BufferGeometry().setFromPoints(points);
+    const arcMat = new THREE.LineBasicMaterial({
+      color: GREEN,
+      transparent: true,
+      opacity: 0.35,
+    });
+    const arcLine = new THREE.Line(arcGeo, arcMat);
+    globe.add(arcLine);
+
+    const traveler = new THREE.Mesh(
+      new THREE.SphereGeometry(0.03, 12, 12),
+      new THREE.MeshBasicMaterial({ color: GREEN }),
+    );
+    globe.add(traveler);
+
+    const destMarker = new THREE.Mesh(
+      new THREE.SphereGeometry(0.032, 16, 16),
+      new THREE.MeshBasicMaterial({ color: GREEN, transparent: true, opacity: 0.9 }),
+    );
+    destMarker.position.copy(b);
+    globe.add(destMarker);
+
+    arcs.push({ curve, traveler, destMarker, phase: i * 0.22, arcMat });
+  });
+
+  const pulseSeeds = [];
+  for (let i = 0; i < 8; i++) {
+    const lat = Math.random() * 160 - 80;
+    const lon = Math.random() * 360 - 180;
+    const mesh = new THREE.Mesh(
+      new THREE.SphereGeometry(0.045, 16, 16),
+      new THREE.MeshBasicMaterial({ color: GREEN, transparent: true, opacity: 0.95 }),
+    );
+    mesh.position.copy(latLonToVec3(lat, lon, surface));
+    globe.add(mesh);
+    pulseSeeds.push({ mesh, phase: Math.random() * Math.PI * 2 });
+  }
+
+  // Pin definitions - channel stats pinned to real lat/lon points on the
+  // globe. HTML elements are created below (once `stage` is available)
+  // and their screen position & visibility are updated each frame so each
+  // stat stays glued to its surface location as the globe rotates.
+  const pinDefs = [
+    { lat: 44, lon: -96, value: "360k+", label: "Views", home: true },
+    { lat: 54, lon: 14, value: "124+", label: "Videos" },
+    { lat: 30, lon: 82, value: "80+", label: "Projects" },
+    { lat: -18, lon: -58, value: "4+", label: "Years" },
+    { lat: -22, lon: 135, value: "2", label: "Sponsors" },
+    { lat: -12, lon: -148, value: "40+", label: "Countries" },
+  ];
+  const pins = [];
+  const tmpVec = new THREE.Vector3();
+
+  const sizeFor = () => {
+    const r = canvas.getBoundingClientRect();
+    return { w: Math.max(120, Math.floor(r.width)), h: Math.max(120, Math.floor(r.height)) };
+  };
+  const resize = () => {
+    const { w, h } = sizeFor();
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  };
+  resize();
+  const ro = new ResizeObserver(resize);
+  ro.observe(canvas);
+
+  let baseSpinY = 0.0022;
+  let baseSpinX = 0.0;
+  let velY = baseSpinY;
+  let velX = baseSpinX;
+  let targetTiltX = 0;
+  let currentTiltX = 0;
+  let targetTiltY = 0;
+  let currentTiltY = 0;
+
+  let isDragging = false;
+  let dragMomentumX = 0;
+  let dragMomentumY = 0;
+  let lastPx = 0;
+  let lastPy = 0;
+  let pointerId = null;
+  let touchedOnce = false;
+
+  const onPointerDown = (e) => {
+    isDragging = true;
+    pointerId = e.pointerId;
+    canvas.setPointerCapture(pointerId);
+    lastPx = e.clientX;
+    lastPy = e.clientY;
+    dragMomentumX = 0;
+    dragMomentumY = 0;
+    root.classList.add("is-dragging");
+    if (!touchedOnce) {
+      touchedOnce = true;
+      root.classList.add("is-touched");
+    }
+  };
+  const onPointerMove = (e) => {
+    if (!isDragging) return;
+    const dx = e.clientX - lastPx;
+    const dy = e.clientY - lastPy;
+    lastPx = e.clientX;
+    lastPy = e.clientY;
+    velY = dx * 0.010;
+    velX = dy * 0.010;
+    dragMomentumX = velX;
+    dragMomentumY = velY;
+  };
+  const onPointerUp = () => {
+    if (!isDragging) return;
+    isDragging = false;
+    if (pointerId !== null) {
+      try {
+        canvas.releasePointerCapture(pointerId);
+      } catch (_) {}
+      pointerId = null;
+    }
+    root.classList.remove("is-dragging");
+  };
+  canvas.addEventListener("pointerdown", onPointerDown);
+  canvas.addEventListener("pointermove", onPointerMove);
+  canvas.addEventListener("pointerup", onPointerUp);
+  canvas.addEventListener("pointercancel", onPointerUp);
+  canvas.addEventListener("pointerleave", onPointerUp);
+
+  const stage = canvas.parentElement;
+  if (stage) {
+    stage.addEventListener("mousemove", (e) => {
+      const rect = stage.getBoundingClientRect();
+      const nx = (e.clientX - rect.left) / rect.width - 0.5;
+      const ny = (e.clientY - rect.top) / rect.height - 0.5;
+      targetTiltY = nx * 0.55;
+      targetTiltX = -ny * 0.35;
+    });
+    stage.addEventListener("mouseleave", () => {
+      targetTiltX = 0;
+      targetTiltY = 0;
+    });
+
+    pinDefs.forEach((def) => {
+      const el = document.createElement("div");
+      el.className = "reach-globe-pin reach-globe-pin--stat";
+      el.setAttribute("aria-hidden", "true");
+      const dot = document.createElement("span");
+      dot.className = "reach-globe-pin-dot" + (def.home ? " is-home" : "");
+      const text = document.createElement("span");
+      text.className = "reach-globe-pin-text";
+      if (def.value) {
+        const val = document.createElement("b");
+        val.className = "reach-globe-pin-value";
+        val.textContent = def.value;
+        const lbl = document.createElement("span");
+        lbl.className = "reach-globe-pin-label";
+        lbl.textContent = def.label;
+        text.appendChild(val);
+        text.appendChild(lbl);
+      } else {
+        text.textContent = def.label;
+      }
+      el.appendChild(dot);
+      el.appendChild(text);
+      stage.appendChild(el);
+      // Local-space point on the globe surface (slightly above so the pin
+      // sits on top of the sphere instead of clipping through it).
+      const local = latLonToVec3(def.lat, def.lon, R * 1.02);
+      pins.push({ el, local });
+    });
+  }
+
+  root.addEventListener("mouseenter", () => root.classList.add("is-hover"));
+  root.addEventListener("mouseleave", () => root.classList.remove("is-hover"));
+
+  let frameHandle = 0;
+  const tick = (now) => {
+    const t = (now || 0) * 0.001;
+
+    if (!isDragging) {
+      const easeBack = 0.055;
+      velY += (baseSpinY - velY) * easeBack;
+      velX += (baseSpinX - velX) * easeBack;
+      dragMomentumY *= 0.94;
+      dragMomentumX *= 0.94;
+      velY += dragMomentumY * 0.035;
+      velX += dragMomentumX * 0.035;
+    }
+
+    globe.rotation.y += velY;
+    globe.rotation.x += velX;
+
+    currentTiltX += (targetTiltX - currentTiltX) * 0.06;
+    currentTiltY += (targetTiltY - currentTiltY) * 0.06;
+
+    scene.rotation.x = currentTiltX;
+    scene.rotation.y = currentTiltY;
+
+    orbitGroup.rotation.y += 0.00045;
+    orbitGroup.rotation.x = Math.sin(t * 0.2) * 0.055;
+    orbitGroup.rotation.z = Math.cos(t * 0.15) * 0.03;
+    starField.rotation.y += 0.00006;
+    starField.material.opacity = 0.36 + Math.sin(t * 0.35) * 0.07;
+
+    atmosphere.material.opacity = 0.04 + Math.sin(t * 1.1) * 0.012;
+
+    arcs.forEach((arc, idx) => {
+      const travel = (t * 0.35 + arc.phase) % 1;
+      const p = arc.curve.getPoint(travel);
+      arc.traveler.position.copy(p);
+      const scale = 1 + Math.sin(t * 2.6 + idx) * 0.35;
+      arc.traveler.scale.setScalar(scale);
+      arc.arcMat.opacity = 0.28 + Math.sin(t * 0.9 + idx * 0.7) * 0.08;
+    });
+
+    pulseSeeds.forEach((p, i) => {
+      const s = 1 + (Math.sin(t * 1.9 + p.phase) + 1) * 0.55;
+      p.mesh.scale.setScalar(s);
+      p.mesh.material.opacity = 0.55 + Math.sin(t * 1.9 + p.phase + i) * 0.35;
+    });
+
+    dots.material.opacity = 0.72 + Math.sin(t * 0.8) * 0.08;
+
+    renderer.render(scene, camera);
+
+    // Project each tracked pin's 3D point to 2D screen space so the pin
+    // stays glued to its lat/lon location as the globe spins. Pins on the
+    // far side fade out so they read as "on" the sphere.
+    if (pins.length && stage) {
+      globe.updateMatrixWorld(true);
+      const sw = renderer.domElement.clientWidth;
+      const sh = renderer.domElement.clientHeight;
+      for (let i = 0; i < pins.length; i++) {
+        const pin = pins[i];
+        tmpVec.copy(pin.local).applyMatrix4(globe.matrixWorld);
+        // Surface-normal test: point faces camera when dot(normal,toCam) > 0.
+        const nx = tmpVec.x, ny = tmpVec.y, nz = tmpVec.z;
+        const cx = camera.position.x - nx;
+        const cy = camera.position.y - ny;
+        const cz = camera.position.z - nz;
+        const nlen = Math.hypot(nx, ny, nz) || 1;
+        const clen = Math.hypot(cx, cy, cz) || 1;
+        const facing = (nx * cx + ny * cy + nz * cz) / (nlen * clen);
+        tmpVec.project(camera);
+        const px = (tmpVec.x * 0.5 + 0.5) * sw;
+        const py = (-tmpVec.y * 0.5 + 0.5) * sh;
+        pin.el.style.transform =
+          "translate3d(" + px.toFixed(1) + "px," + py.toFixed(1) + "px,0) translate(-50%,-50%)";
+        const op = facing > 0.08 ? Math.min(1, (facing - 0.08) / 0.22) : 0;
+        pin.el.style.opacity = op.toFixed(2);
+      }
+    }
+    frameHandle = requestAnimationFrame(tick);
+  };
+  frameHandle = requestAnimationFrame(tick);
+}
+
 function main() {
   setupNavbar();
   setupReveal();
@@ -1836,6 +2297,7 @@ function main() {
   setupProjectOverlays();
   setupCardViewProjectEnhancements();
   setupCardSlideshows();
+  initReachGlobe();
 }
 
 if (document.readyState === "loading") {
