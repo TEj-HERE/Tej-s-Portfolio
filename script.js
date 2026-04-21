@@ -538,6 +538,10 @@ function initNodeNetwork() {
   let W = 0, H = 0, pCX = 0, pCY = 0, t = 0;
   let mouse = { x: null, y: null };
   let nodes = [], edges = [];
+  // Creative flair: click shockwaves + rare shooting-star meteors
+  let shockwaves = [];          // { x, y, age, maxAge, maxR, col }
+  let meteors = [];             // { x, y, vx, vy, life, maxLife, col, trail }
+  let nextMeteorAt = 600;       // spawn first meteor ~10s in (t is frame-count, ~60fps)
 
   // Load profile photo
   let photoImg = null;
@@ -833,6 +837,143 @@ function initNodeNetwork() {
       mouse.y = e.clientY - r.top;
     }, { passive: true });
     heroEl.addEventListener("pointerleave", () => { mouse.x = null; mouse.y = null; }, { passive: true });
+
+    // Click anywhere in the hero (not on an interactive element) -> shockwave
+    heroEl.addEventListener("pointerdown", (e) => {
+      // Don't fire when clicking buttons, links, the profile photo area, etc.
+      if (e.target && e.target.closest && e.target.closest("a,button,input,textarea,video,[data-scroll],[data-youtube]")) return;
+      const r = canvas.getBoundingClientRect();
+      const sx = e.clientX - r.left;
+      const sy = e.clientY - r.top;
+      // Ignore clicks outside the visible canvas bounds
+      if (sx < 0 || sy < 0 || sx > W || sy > H) return;
+      const palette = [C.green, C.blue, C.teal];
+      shockwaves.push({
+        x: sx,
+        y: sy,
+        age: 0,
+        maxAge: 70,               // ~1.2s at 60fps
+        maxR: Math.max(W, H) * 0.55,
+        col: palette[Math.floor(Math.random() * palette.length)],
+      });
+      if (shockwaves.length > 4) shockwaves.shift(); // cap for perf
+    }, { passive: true });
+  }
+
+  // ── meteor helpers ───────────────────────────────────────────────────────────
+
+  function spawnMeteor() {
+    // Diagonal streak from off-screen (top or sides) going down-right or down-left
+    const fromLeft = Math.random() < 0.5;
+    const startX = fromLeft ? -60 : W + 60;
+    const startY = rand(-40, H * 0.45);
+    const speed  = rand(7, 11);
+    const ang    = fromLeft ? rand(0.22, 0.42) : Math.PI - rand(0.22, 0.42); // mostly downward-inward
+    const palette = [C.green, C.blue, C.teal, C.white];
+    meteors.push({
+      x: startX,
+      y: startY,
+      vx: Math.cos(ang) * speed,
+      vy: Math.sin(ang) * speed,
+      life: 0,
+      maxLife: 110,
+      col: palette[Math.floor(Math.random() * palette.length)],
+      trail: [],                  // recent positions
+    });
+  }
+
+  function updateMeteors() {
+    if (t >= nextMeteorAt) {
+      spawnMeteor();
+      // Next meteor in ~8-15s (at ~60fps)
+      nextMeteorAt = t + Math.floor(rand(480, 900));
+    }
+    for (let i = meteors.length - 1; i >= 0; i--) {
+      const m = meteors[i];
+      m.trail.push({ x: m.x, y: m.y });
+      if (m.trail.length > 14) m.trail.shift();
+      m.x += m.vx;
+      m.y += m.vy;
+      m.life++;
+      // Kill if off-screen or dead
+      if (m.life > m.maxLife || m.x < -120 || m.x > W + 120 || m.y > H + 120) {
+        meteors.splice(i, 1);
+      }
+    }
+  }
+
+  function drawMeteors() {
+    for (const m of meteors) {
+      const lifeFade = 1 - m.life / m.maxLife;
+      // Trail
+      for (let i = 0; i < m.trail.length - 1; i++) {
+        const p0 = m.trail[i];
+        const p1 = m.trail[i + 1];
+        const a  = (i / m.trail.length) * 0.9 * lifeFade;
+        ctx.strokeStyle = colStr(m.col, a);
+        ctx.lineWidth = 1 + (i / m.trail.length) * 2.2;
+        ctx.beginPath();
+        ctx.moveTo(p0.x, p0.y);
+        ctx.lineTo(p1.x, p1.y);
+        ctx.stroke();
+      }
+      // Head glow + core
+      drawGlow(m.x, m.y, 22, m.col, 0.55 * lifeFade);
+      ctx.beginPath();
+      ctx.arc(m.x, m.y, 2.2, 0, Math.PI * 2);
+      ctx.fillStyle = colStr(C.white, 0.95 * lifeFade);
+      ctx.fill();
+    }
+  }
+
+  // ── shockwave helpers ────────────────────────────────────────────────────────
+
+  function updateShockwaves() {
+    // Light up nodes as the ring passes through them
+    for (let i = shockwaves.length - 1; i >= 0; i--) {
+      const sw = shockwaves[i];
+      const prevProg = sw.age / sw.maxAge;
+      sw.age++;
+      const prog = sw.age / sw.maxAge;
+      const rNow  = prog * sw.maxR;
+      const rPrev = prevProg * sw.maxR;
+      const band  = Math.max(14, (rNow - rPrev) * 1.5 + 18);
+      // Spike lit on nodes inside the wave ring this frame
+      for (const n of nodes) {
+        const dx = n.x - sw.x;
+        const dy = n.y - sw.y;
+        const d  = Math.sqrt(dx * dx + dy * dy);
+        if (d > rPrev - band * 0.5 && d < rNow + band * 0.5) {
+          const spike = 1.4 * (1 - prog);
+          n.lit = Math.max(n.lit ?? 1, 1 + spike);
+        }
+      }
+      if (sw.age >= sw.maxAge) shockwaves.splice(i, 1);
+    }
+  }
+
+  function drawShockwaves() {
+    for (const sw of shockwaves) {
+      const prog = sw.age / sw.maxAge;
+      const r = prog * sw.maxR;
+      const alpha = (1 - prog) * 0.55;
+      // Main thin ring
+      ctx.beginPath();
+      ctx.arc(sw.x, sw.y, r, 0, Math.PI * 2);
+      ctx.strokeStyle = colStr(sw.col, alpha * 0.85);
+      ctx.lineWidth = 1.3;
+      ctx.stroke();
+      // Soft inner band
+      ctx.beginPath();
+      ctx.arc(sw.x, sw.y, r * 0.96, 0, Math.PI * 2);
+      ctx.strokeStyle = colStr(sw.col, alpha * 0.35);
+      ctx.lineWidth = 4;
+      ctx.stroke();
+      // Origin flash (first ~15 frames)
+      if (sw.age < 15) {
+        drawGlow(sw.x, sw.y, 40, sw.col, 0.5 * (1 - sw.age / 15));
+      }
+    }
   }
 
   // ── main loop ───────────────────────────────────────────────────────────────
@@ -840,6 +981,9 @@ function initNodeNetwork() {
   function draw() {
     t++;
     ctx.clearRect(0, 0, W, H);
+
+    updateShockwaves();
+    updateMeteors();
 
     // Move nodes
     for (const n of nodes) {
@@ -901,20 +1045,33 @@ function initNodeNetwork() {
       ctx.lineWidth = 1.0;
       ctx.stroke();
 
-      // Pulse 1 - bright dot
-      const p1x = na.x + dx * e.p1, p1y = na.y + dy * e.p1;
-      drawGlow(p1x, p1y, 8, ca, fade * 0.55 * edgeDim);
-      ctx.beginPath();
-      ctx.arc(p1x, p1y, 2.5, 0, Math.PI * 2);
-      ctx.fillStyle = colStr(ca, fade * 0.95 * edgeDim);
-      ctx.fill();
+      // Helper: draw a short data-packet streak along the edge ending at parametric t_
+      const drawStreak = (t_, headCol, tailLen, intensity) => {
+        const hx = na.x + dx * t_, hy = na.y + dy * t_;
+        // Clamp tail length to edge bounds so streaks don't overshoot the endpoints
+        const tailT = Math.max(0, t_ - tailLen);
+        const tx = na.x + dx * tailT, ty = na.y + dy * tailT;
+        const streak = ctx.createLinearGradient(tx, ty, hx, hy);
+        streak.addColorStop(0, colStr(headCol, 0));
+        streak.addColorStop(1, colStr(headCol, intensity * 0.9 * edgeDim));
+        ctx.strokeStyle = streak;
+        ctx.lineWidth = 1.6;
+        ctx.beginPath();
+        ctx.moveTo(tx, ty);
+        ctx.lineTo(hx, hy);
+        ctx.stroke();
+        // Bright head
+        drawGlow(hx, hy, 9, headCol, intensity * 0.55 * edgeDim);
+        ctx.beginPath();
+        ctx.arc(hx, hy, 2.2, 0, Math.PI * 2);
+        ctx.fillStyle = colStr(headCol, intensity * 0.95 * edgeDim);
+        ctx.fill();
+      };
 
-      // Pulse 2 - dimmer
-      const p2x = na.x + dx * e.p2, p2y = na.y + dy * e.p2;
-      ctx.beginPath();
-      ctx.arc(p2x, p2y, 1.6, 0, Math.PI * 2);
-      ctx.fillStyle = colStr(cb, fade * 0.65 * edgeDim);
-      ctx.fill();
+      // Pulse 1 - bright data packet with streak tail
+      drawStreak(e.p1, ca, 0.22, fade);
+      // Pulse 2 - dimmer, shorter tail, traveling the other way visually via color
+      drawStreak(e.p2, cb, 0.14, fade * 0.7);
     }
 
     // Thin spoke lines from nearby nodes to photo
@@ -940,6 +1097,10 @@ function initNodeNetwork() {
     drawPhoto();
 
     for (const n of nodes) drawNode(n);
+
+    // Creative flair layer (above nodes for visibility)
+    drawShockwaves();
+    drawMeteors();
 
     requestAnimationFrame(draw);
   }
@@ -1312,13 +1473,16 @@ function setupCustomCursor() {
   });
 
   let ringScale = 1;
+  /** Ring follow: subtle trail without feeling glued (0.11 laggy, 0.42 glued). */
+  const RING_FOLLOW = 0.26;
+  const RING_SCALE_SMOOTH = 0.18;
   function tick() {
     // Dot snaps to cursor immediately
     dot.style.transform  = `translate(${mx}px, ${my}px) translate(-50%, -50%)`;
-    // Ring lags behind with lerp
-    rx += (mx - rx) * 0.11;
-    ry += (my - ry) * 0.11;
-    ringScale += (scale - ringScale) * 0.13;
+    // Ring follows with light smoothing — stays near the dot, not half a second behind
+    rx += (mx - rx) * RING_FOLLOW;
+    ry += (my - ry) * RING_FOLLOW;
+    ringScale += (scale - ringScale) * RING_SCALE_SMOOTH;
     ring.style.transform = `translate(${rx}px, ${ry}px) translate(-50%, -50%) scale(${ringScale})`;
     requestAnimationFrame(tick);
   }
