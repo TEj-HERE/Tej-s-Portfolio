@@ -642,15 +642,26 @@ img {
   position: relative;
   z-index: 1;
 }
-.experience-section-intro {
-  text-wrap: pretty;
-  max-width: 36rem;
-}
-
 .section-head {
   display: grid;
   gap: 10px;
   margin-bottom: 34px;
+}
+.experience-section .section-head {
+  gap: 6px;
+  margin-bottom: 26px;
+}
+.experience-section .section-head p.experience-section-intro {
+  max-width: none;
+  white-space: nowrap;
+  font-size: clamp(14px, 1.05vw + 0.62rem, 17.5px);
+  line-height: 1.35;
+}
+@media (max-width: 960px) {
+  .experience-section .section-head p.experience-section-intro {
+    white-space: normal;
+    text-wrap: pretty;
+  }
 }
 .section-head h2 {
   margin: 0;
@@ -2127,29 +2138,40 @@ img {
 }
 .reach-stat--sponsors {
   grid-column: 1 / -1;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  gap: 14px;
+  justify-content: center;
+  gap: 8px;
   min-height: 0;
-  padding: 13px 15px;
+  padding: 14px 16px;
+  text-align: center;
+}
+.reach-stat-sponsors-head {
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px 10px;
 }
 .reach-stat--sponsors .reach-stat-value {
-  font-size: clamp(1.35rem, 2.2vw, 1.65rem);
+  font-size: clamp(1.25rem, 2vw, 1.5rem);
+  line-height: 1;
 }
-.reach-stat-meta {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 3px;
-  text-align: right;
+.reach-stat--sponsors .reach-stat-label {
+  margin: 0;
+  padding-bottom: 1px;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: rgba(255, 255, 255, 0.55);
 }
-.reach-stat-sub {
+.reach-stat--sponsors .reach-stat-sub {
+  display: block;
   font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.03em;
-  color: rgba(0, 255, 160, 0.9);
-  line-height: 1.25;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(0, 255, 160, 0.92);
+  line-height: 1.3;
 }
 
 .reach-globe-stage {
@@ -2211,7 +2233,8 @@ img {
   background: rgba(6, 10, 14, 0.85);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
-  white-space: nowrap;
+  white-space: normal;
+  max-width: 12.5rem;
   z-index: 3;
   pointer-events: none;
   opacity: 0;
@@ -2247,10 +2270,12 @@ img {
   letter-spacing: 0.02em;
   color: var(--green);
   text-shadow: 0 0 8px rgba(0, 255, 136, 0.35);
-  line-height: 1;
+  line-height: 1.15;
   display: inline-flex;
   align-items: baseline;
-  gap: 5px;
+  flex-wrap: wrap;
+  gap: 4px 6px;
+  min-width: 0;
 }
 .reach-globe-pin-value {
   font-size: 12.5px;
@@ -2323,13 +2348,8 @@ img {
     padding: 11px 12px;
   }
   .reach-stat--sponsors {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-  }
-  .reach-stat--sponsors .reach-stat-meta {
-    align-items: flex-start;
-    text-align: left;
+    padding: 12px 14px;
+    gap: 7px;
   }
   .reach-globe-pin { padding: 3px 6px; }
   .reach-globe-pin-value { font-size: 10.5px; }

@@ -1861,6 +1861,8 @@ function initReachGlobe() {
 
   const globe = new THREE.Group();
   scene.add(globe);
+  // Initial yaw so the first paint shows stats more evenly (still spins freely).
+  globe.rotation.y = 0.42;
 
   const R = 1.35;
 
@@ -2050,29 +2052,36 @@ function initReachGlobe() {
   });
 
   const pulseSeeds = [];
-  for (let i = 0; i < 8; i++) {
-    const lat = Math.random() * 160 - 80;
-    const lon = Math.random() * 360 - 180;
+  const golden = Math.PI * (3 - Math.sqrt(5));
+  for (let i = 0; i < 14; i++) {
+    const y = 1 - (i / 13) * 2;
+    const r0 = Math.sqrt(Math.max(0, 1 - y * y));
+    const theta = golden * i;
+    const x = Math.cos(theta) * r0 * surface;
+    const yy = y * surface;
+    const z = Math.sin(theta) * r0 * surface;
     const mesh = new THREE.Mesh(
-      new THREE.SphereGeometry(0.045, 16, 16),
+      new THREE.SphereGeometry(0.042, 14, 14),
       new THREE.MeshBasicMaterial({ color: GREEN, transparent: true, opacity: 0.95 }),
     );
-    mesh.position.copy(latLonToVec3(lat, lon, surface));
+    mesh.position.set(x, yy, z);
     globe.add(mesh);
-    pulseSeeds.push({ mesh, phase: Math.random() * Math.PI * 2 });
+    pulseSeeds.push({ mesh, phase: (i * 0.7) % (Math.PI * 2) });
   }
 
   // Pin definitions - channel stats pinned to real lat/lon points on the
   // globe. HTML elements are created below (once `stage` is available)
   // and their screen position & visibility are updated each frame so each
   // stat stays glued to its surface location as the globe rotates.
+  // Stat pins spaced around the sphere (staggered lat + ~60° lon steps) so
+  // labels are not all bunched on one face as the globe spins.
   const pinDefs = [
-    { lat: 44, lon: -96, value: "360k+", label: "Views", home: true },
-    { lat: 54, lon: 14, value: "124+", label: "Videos" },
-    { lat: 30, lon: 82, value: "80+", label: "Projects" },
-    { lat: -18, lon: -58, value: "4+", label: "Years" },
-    { lat: -22, lon: 135, value: "2", label: "Sponsors" },
-    { lat: -12, lon: -148, value: "40+", label: "Countries" },
+    { lat: 43.7, lon: -79.4, value: "360k+", label: "Views", home: true },
+    { lat: 52, lon: 38, value: "124+", label: "Videos" },
+    { lat: -14, lon: -62, value: "80+", label: "Projects / robots" },
+    { lat: 24, lon: 82, value: "4+", label: "Years · content created" },
+    { lat: -34, lon: 152, value: "2", label: "Sponsors" },
+    { lat: 6, lon: -168, value: "40+", label: "Countries" },
   ];
   const pins = [];
   const tmpVec = new THREE.Vector3();
