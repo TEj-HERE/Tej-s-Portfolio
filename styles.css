@@ -2354,9 +2354,23 @@ img {
     padding: 12px 14px;
     gap: 7px;
   }
-  .reach-globe-pin { padding: 3px 6px; }
+  .reach-globe-pin {
+    padding: 4px 7px;
+    max-width: min(11.5rem, calc(100vw - 48px));
+  }
   .reach-globe-pin-value { font-size: 10.5px; }
-  .reach-globe-pin-label { display: none; }
+  /* Keep full labels on phone (was display:none — only numbers showed). */
+  .reach-globe-pin-label {
+    font-size: 7px;
+    letter-spacing: 0.09em;
+    line-height: 1.2;
+  }
+  .reach-globe-pin-text {
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 3px 5px;
+    max-width: 9.5rem;
+  }
 }
 
 /* =====================================================================
