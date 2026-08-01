@@ -162,42 +162,6 @@ function setupLoopVideos() {
   });
 }
 
-function setupAboutVideoTapAudio() {
-  document.querySelectorAll("video[data-tap-audio]").forEach((video) => {
-    const wrap = video.closest(".about-photo-video");
-    if (!wrap) return;
-
-    video.muted = true;
-
-    const syncUi = () => {
-      const soundOn = !video.muted;
-      wrap.classList.toggle("is-audio-on", soundOn);
-      video.setAttribute(
-        "aria-label",
-        soundOn ? "Intro video - tap to mute" : "Intro video - tap to turn sound on",
-      );
-    };
-
-    syncUi();
-
-    const toggle = (e) => {
-      e.preventDefault();
-      video.muted = !video.muted;
-      if (!video.muted) {
-        video.play().catch(() => {});
-      }
-      syncUi();
-    };
-
-    video.addEventListener("click", toggle);
-    video.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" || e.key === " ") {
-        toggle(e);
-      }
-    });
-  });
-}
-
 function setYouTubeLink() {
   // Placeholder requested: “Too Young To Learn All” (channel name). Using a YouTube search URL by default.
   const url = "https://www.youtube.com/channel/UCZCSh99yfUspORSF058BZBQ";
@@ -2632,7 +2596,6 @@ function main() {
   setupHeroButton();
   setFooterYear();
   setupLoopVideos();
-  setupAboutVideoTapAudio();
   setYouTubeLink();
   initThreeBackground();
   initNodeNetwork();

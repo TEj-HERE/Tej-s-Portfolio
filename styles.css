@@ -713,33 +713,9 @@ img {
 }
 .about-photo-video .about-video-bg {
   z-index: 0;
-  pointer-events: auto;
-  cursor: pointer !important;
+  pointer-events: none;
   object-fit: cover;
   object-position: center center;
-}
-.about-photo-video.is-audio-on .about-video-hint-muted,
-.about-photo-video:not(.is-audio-on) .about-video-hint-unmuted {
-  display: none;
-}
-.about-video-hint {
-  position: absolute;
-  left: 50%;
-  bottom: 14px;
-  transform: translateX(-50%);
-  z-index: 2;
-  pointer-events: none;
-  padding: 7px 12px;
-  border-radius: 999px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.88);
-  background: rgba(6, 10, 14, 0.72);
-  border: 1px solid rgba(0, 255, 160, 0.35);
-  box-shadow: 0 0 20px rgba(0, 255, 136, 0.15);
-  white-space: nowrap;
 }
 .about-photo-video::after {
   content: "";
