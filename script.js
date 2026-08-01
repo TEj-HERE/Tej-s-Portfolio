@@ -18,6 +18,38 @@ function clamp(v, min, max) {
   return Math.min(max, Math.max(min, v));
 }
 
+/** Pause heavy loops when a section scrolls off-screen. */
+function observeVisibility(element, onShow, onHide, options) {
+  if (!element) {
+    onShow();
+    return () => {};
+  }
+  if (!("IntersectionObserver" in window)) {
+    onShow();
+    return () => {};
+  }
+  let visible = false;
+  const io = new IntersectionObserver(
+    (entries) => {
+      const v = entries.some((en) => en.isIntersecting);
+      if (v === visible) return;
+      visible = v;
+      if (v) onShow();
+      else onHide();
+    },
+    { threshold: 0, rootMargin: "100px", ...options }
+  );
+  io.observe(element);
+  queueMicrotask(() => {
+    const r = element.getBoundingClientRect();
+    if (r.bottom > 0 && r.top < window.innerHeight + 120) {
+      visible = true;
+      onShow();
+    }
+  });
+  return () => io.disconnect();
+}
+
 function smoothScrollToId(id) {
   const el = document.getElementById(id);
   if (!el) return;
@@ -501,10 +533,23 @@ function initThreeBackground() {
     bgGroup.position.y += ((-cursor.y * 0.35) - bgGroup.position.y) * 0.03;
 
     renderer.render(scene, camera);
-    state.raf = requestAnimationFrame(tick);
+    if (running) state.raf = requestAnimationFrame(tick);
   }
 
-  state.raf = requestAnimationFrame(tick);
+  let running = false;
+  const heroSection = document.querySelector(".hero");
+  observeVisibility(
+    heroSection || canvas,
+    () => {
+      running = true;
+      if (!state.raf) state.raf = requestAnimationFrame(tick);
+    },
+    () => {
+      running = false;
+      cancelAnimationFrame(state.raf);
+      state.raf = 0;
+    }
+  );
 }
 
 function setupHeroButton() {
@@ -518,7 +563,7 @@ function setupHeroButton() {
 
 function initNodeNetwork() {
   const canvas = document.getElementById("node-canvas");
-  if (!canvas) return;
+  if (!canvas || state.reduceMotion) return;
   const ctx = canvas.getContext("2d");
 
   // Palette - green / blue / teal / soft-white only
@@ -533,11 +578,15 @@ function initNodeNetwork() {
   const PHOTO_R    = 115;
   const NODE_COUNT = 62;   // 12 orbit + 35 right-cluster + 15 left-ambient
   const LINK_DIST  = 200;
+  const LINK_DIST_SQ = LINK_DIST * LINK_DIST;
   const PULSE_SPD  = 0.009;
 
   let W = 0, H = 0, pCX = 0, pCY = 0, t = 0;
   let mouse = { x: null, y: null };
-  let nodes = [], edges = [];
+  let nodes = [], edges = [], activeEdges = [];
+  let edgeRefreshAt = 0;
+  let running = false;
+  let frameId = 0;
   // Creative flair: click shockwaves + rare shooting-star meteors
   let shockwaves = [];          // { x, y, age, maxAge, maxR, col }
   let meteors = [];             // { x, y, vx, vy, life, maxLife, col, trail }
@@ -815,8 +864,24 @@ function initNodeNetwork() {
         edges.push({ a: i, b: j, p1: Math.random(), p2: (Math.random() + 0.5) % 1 });
   }
 
+  function refreshActiveEdges() {
+    activeEdges.length = 0;
+    for (const e of edges) {
+      const na = nodes[e.a];
+      const nb = nodes[e.b];
+      const dx = nb.x - na.x;
+      const dy = nb.y - na.y;
+      if (dx * dx + dy * dy <= LINK_DIST_SQ) activeEdges.push(e);
+    }
+  }
+
+  function scheduleDraw() {
+    if (!running || frameId) return;
+    frameId = requestAnimationFrame(draw);
+  }
+
   function resize() {
-    const dpr = window.devicePixelRatio || 1;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
     W = canvas.offsetWidth  || window.innerWidth * 0.58;
     H = canvas.offsetHeight || window.innerHeight;
     canvas.width  = Math.round(W * dpr);
@@ -825,6 +890,7 @@ function initNodeNetwork() {
     pCX = W * 0.72;
     pCY = H * 0.46;
     buildNodes();
+    edgeRefreshAt = 0;
   }
   resize();
   window.addEventListener("resize", resize, { passive: true });
@@ -979,6 +1045,9 @@ function initNodeNetwork() {
   // ── main loop ───────────────────────────────────────────────────────────────
 
   function draw() {
+    frameId = 0;
+    if (!running) return;
+
     t++;
     ctx.clearRect(0, 0, W, H);
 
@@ -1021,12 +1090,18 @@ function initNodeNetwork() {
       }
     }
 
+    if (t >= edgeRefreshAt) {
+      refreshActiveEdges();
+      edgeRefreshAt = t + 18;
+    }
+
     // Draw gradient edges with 2 simultaneous pulses
-    for (const e of edges) {
+    for (const e of activeEdges) {
       const na = nodes[e.a], nb = nodes[e.b];
       const dx = nb.x - na.x, dy = nb.y - na.y;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist > LINK_DIST) continue;
+      const distSq = dx * dx + dy * dy;
+      if (distSq > LINK_DIST_SQ) continue;
+      const dist = Math.sqrt(distSq);
 
       e.p1 = (e.p1 + PULSE_SPD) % 1;
       e.p2 = (e.p2 + PULSE_SPD) % 1;
@@ -1102,10 +1177,22 @@ function initNodeNetwork() {
     drawShockwaves();
     drawMeteors();
 
-    requestAnimationFrame(draw);
+    scheduleDraw();
   }
 
-  draw();
+  const heroSection = document.querySelector(".hero");
+  observeVisibility(
+    heroSection || canvas,
+    () => {
+      running = true;
+      scheduleDraw();
+    },
+    () => {
+      running = false;
+      cancelAnimationFrame(frameId);
+      frameId = 0;
+    }
+  );
 }
 
 /**
@@ -1133,9 +1220,30 @@ function initExperienceAurora() {
   let visible = false;
 
   const UI_DIM_SEL = ".section-head, .tl-card, .reach-globe";
+  let uiRects = [];
 
   const LINE_COUNT = 8;
   const SEGS = 36;
+
+  function cacheUiRects() {
+    uiRects = Array.from(section.querySelectorAll(UI_DIM_SEL), (el) =>
+      el.getBoundingClientRect()
+    );
+  }
+
+  function pointerOverUi(clientX, clientY) {
+    for (const r of uiRects) {
+      if (
+        clientX >= r.left &&
+        clientX <= r.right &&
+        clientY >= r.top &&
+        clientY <= r.bottom
+      ) {
+        return true;
+      }
+    }
+    return false;
+  }
 
   function resize() {
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -1148,9 +1256,13 @@ function initExperienceAurora() {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
 
-  const ro = new ResizeObserver(resize);
+  const ro = new ResizeObserver(() => {
+    resize();
+    cacheUiRects();
+  });
   ro.observe(section);
   resize();
+  cacheUiRects();
 
   window.addEventListener(
     "pointermove",
@@ -1170,12 +1282,7 @@ function initExperienceAurora() {
       if (!pointerInside) {
         targetFx = 1;
       } else {
-        const hit = document.elementFromPoint(e.clientX, e.clientY);
-        const overUi =
-          hit &&
-          section.contains(hit) &&
-          hit.closest(UI_DIM_SEL);
-        targetFx = overUi ? 0.12 : 1;
+        targetFx = pointerOverUi(e.clientX, e.clientY) ? 0.12 : 1;
       }
     },
     { passive: true }
@@ -1354,48 +1461,65 @@ function setupCardTilt() {
 function setupMagneticButtons() {
   if (state.reduceMotion) return;
 
-  document.querySelectorAll(".btn-primary").forEach((btn) => {
-    if (btn.classList.contains("btn-hero-cta")) return;
-    let raf = 0;
-    let tx = 0, ty = 0;
-    let cx = 0, cy = 0;
-    let active = false;
-    const RADIUS = 90;
+  const buttons = Array.from(document.querySelectorAll(".btn-primary")).filter(
+    (btn) => !btn.classList.contains("btn-hero-cta")
+  );
+  if (!buttons.length) return;
 
-    function frame() {
-      cx += (tx - cx) * 0.14;
-      cy += (ty - cy) * 0.14;
-      btn.style.transform = `translate(${cx}px, ${cy}px)`;
-      if (Math.abs(cx - tx) > 0.05 || Math.abs(cy - ty) > 0.05 || active) {
-        raf = requestAnimationFrame(frame);
+  const states = buttons.map((btn) => {
+    const s = {
+      btn,
+      raf: 0,
+      tx: 0,
+      ty: 0,
+      cx: 0,
+      cy: 0,
+      active: false,
+      RADIUS: 90,
+    };
+
+    s.frame = function frame() {
+      s.cx += (s.tx - s.cx) * 0.14;
+      s.cy += (s.ty - s.cy) * 0.14;
+      s.btn.style.transform = `translate(${s.cx}px, ${s.cy}px)`;
+      if (Math.abs(s.cx - s.tx) > 0.05 || Math.abs(s.cy - s.ty) > 0.05 || s.active) {
+        s.raf = requestAnimationFrame(s.frame);
       } else {
-        btn.style.transform = "";
-        raf = 0;
+        s.btn.style.transform = "";
+        s.raf = 0;
       }
-    }
+    };
 
-    window.addEventListener("mousemove", (e) => {
-      const r = btn.getBoundingClientRect();
-      const bx = r.left + r.width / 2;
-      const by = r.top + r.height / 2;
-      const dx = e.clientX - bx;
-      const dy = e.clientY - by;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-
-      if (dist < RADIUS) {
-        active = true;
-        const strength = (1 - dist / RADIUS) * 0.38;
-        tx = dx * strength;
-        ty = dy * strength;
-        if (!raf) raf = requestAnimationFrame(frame);
-      } else if (active) {
-        active = false;
-        tx = 0;
-        ty = 0;
-        if (!raf) raf = requestAnimationFrame(frame);
-      }
-    }, { passive: true });
+    return s;
   });
+
+  window.addEventListener(
+    "mousemove",
+    (e) => {
+      for (const s of states) {
+        const r = s.btn.getBoundingClientRect();
+        const bx = r.left + r.width / 2;
+        const by = r.top + r.height / 2;
+        const dx = e.clientX - bx;
+        const dy = e.clientY - by;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist < s.RADIUS) {
+          s.active = true;
+          const strength = (1 - dist / s.RADIUS) * 0.38;
+          s.tx = dx * strength;
+          s.ty = dy * strength;
+          if (!s.raf) s.raf = requestAnimationFrame(s.frame);
+        } else if (s.active) {
+          s.active = false;
+          s.tx = 0;
+          s.ty = 0;
+          if (!s.raf) s.raf = requestAnimationFrame(s.frame);
+        }
+      }
+    },
+    { passive: true }
+  );
 }
 
 function setupHeroTextParallax() {
@@ -1413,16 +1537,31 @@ function setupHeroTextParallax() {
    .filter((l) => l.el);
 
   let mx = 0, my = 0;
+  let inHero = false;
+  let raf = 0;
+
+  function needsParallaxFrame() {
+    if (inHero) return true;
+    return layers.some((l) => Math.abs(l.cx) > 0.05 || Math.abs(l.cy) > 0.05);
+  }
+
+  hero.addEventListener("mouseenter", () => {
+    inHero = true;
+    if (!raf) raf = requestAnimationFrame(tick);
+  }, { passive: true });
 
   hero.addEventListener("mousemove", (e) => {
     const r = hero.getBoundingClientRect();
     mx = e.clientX - r.left - r.width / 2;
     my = e.clientY - r.top - r.height / 2;
+    if (!raf) raf = requestAnimationFrame(tick);
   }, { passive: true });
 
   hero.addEventListener("mouseleave", () => {
+    inHero = false;
     mx = 0;
     my = 0;
+    if (!raf) raf = requestAnimationFrame(tick);
   }, { passive: true });
 
   function tick() {
@@ -1431,10 +1570,9 @@ function setupHeroTextParallax() {
       l.cy += (my * l.yf - l.cy) * 0.09;
       l.el.style.transform = `translate3d(${l.cx}px, ${l.cy}px, 0)`;
     }
-    requestAnimationFrame(tick);
+    if (needsParallaxFrame()) raf = requestAnimationFrame(tick);
+    else raf = 0;
   }
-
-  tick();
 }
 
 function setupCustomCursor() {
@@ -1450,29 +1588,36 @@ function setupCustomCursor() {
   let mx = -200, my = -200;
   let rx = -200, ry = -200;
   let scale = 1;
+  let ringScale = 1;
+  let raf = 0;
+
+  function needsCursorFrame() {
+    return (
+      Math.abs(mx - rx) > 0.35 ||
+      Math.abs(my - ry) > 0.35 ||
+      Math.abs(ringScale - scale) > 0.006
+    );
+  }
+
+  function kickCursor() {
+    if (!raf) raf = requestAnimationFrame(tick);
+  }
+
+  const HOVER_SEL = "a, button, .btn, .card, [role='button']";
 
   window.addEventListener("pointermove", (e) => {
     mx = e.clientX;
     my = e.clientY;
+    const hovering = !!e.target.closest(HOVER_SEL);
+    const nextScale = hovering ? 1.35 : 1;
+    if (nextScale !== scale) {
+      scale = nextScale;
+      ring.classList.toggle("is-hover", hovering);
+      dot.classList.toggle("is-hover", hovering);
+    }
+    kickCursor();
   }, { passive: true });
 
-  // Hover state: expand ring on interactive elements
-  document.addEventListener("pointerover", (e) => {
-    if (e.target.closest("a, button, .btn, .card, [role='button']")) {
-      scale = 1.35;
-      ring.classList.add("is-hover");
-      dot.classList.add("is-hover");
-    }
-  });
-  document.addEventListener("pointerout", (e) => {
-    if (e.target.closest("a, button, .btn, .card, [role='button']")) {
-      scale = 1;
-      ring.classList.remove("is-hover");
-      dot.classList.remove("is-hover");
-    }
-  });
-
-  let ringScale = 1;
   /** Ring follow: subtle trail without feeling glued (0.11 laggy, 0.42 glued). */
   const RING_FOLLOW = 0.26;
   const RING_SCALE_SMOOTH = 0.18;
@@ -1484,9 +1629,9 @@ function setupCustomCursor() {
     ry += (my - ry) * RING_FOLLOW;
     ringScale += (scale - ringScale) * RING_SCALE_SMOOTH;
     ring.style.transform = `translate(${rx}px, ${ry}px) translate(-50%, -50%) scale(${ringScale})`;
-    requestAnimationFrame(tick);
+    if (needsCursorFrame()) raf = requestAnimationFrame(tick);
+    else raf = 0;
   }
-  tick();
 }
 
 const PROJECT_OVERLAYS = {
@@ -1812,6 +1957,8 @@ function setupCardViewProjectEnhancements() {
   }
 
   const instances = [];
+  let anyHover = false;
+  let raf = 0;
 
   anchors.forEach((a) => {
     if (a.dataset.ctaEnhanced === "1") return;
@@ -1848,9 +1995,19 @@ function setupCardViewProjectEnhancements() {
     if (card) {
       card.addEventListener("mouseenter", () => {
         inst.cardHover = true;
+        anyHover = true;
+        if (!raf) raf = requestAnimationFrame(tick);
       });
       card.addEventListener("mouseleave", () => {
         inst.cardHover = false;
+        anyHover = instances.some((i) => i.cardHover);
+        if (!anyHover && raf) {
+          cancelAnimationFrame(raf);
+          raf = 0;
+          for (const i of instances) {
+            i.ctx?.clearRect(0, 0, i.lw, i.lh);
+          }
+        }
       });
     }
 
@@ -1882,12 +2039,17 @@ function setupCardViewProjectEnhancements() {
   });
 
   function tick() {
-    requestAnimationFrame(tick);
+    if (!anyHover) {
+      raf = 0;
+      return;
+    }
+    raf = requestAnimationFrame(tick);
     for (const inst of instances) {
-      const { ctx, lw, lh, particles, cardHover } = inst;
+      if (!inst.cardHover) continue;
+      const { ctx, lw, lh, particles } = inst;
       if (!ctx || lw < 8 || lh < 8) continue;
-      const speed = cardHover ? 1 : 0.36;
-      const baseA = cardHover ? 0.5 : 0.19;
+      const speed = 1;
+      const baseA = 0.5;
       ctx.clearRect(0, 0, lw, lh);
       for (const p of particles) {
         p.x += p.vx * speed;
@@ -1907,8 +2069,6 @@ function setupCardViewProjectEnhancements() {
       }
     }
   }
-
-  requestAnimationFrame(tick);
 }
 
 function setupCardSlideshows() {
@@ -2371,7 +2531,9 @@ function initReachGlobe() {
   root.addEventListener("mouseleave", () => root.classList.remove("is-hover"));
 
   let frameHandle = 0;
+  let running = false;
   const tick = (now) => {
+    if (!running) return;
     const t = (now || 0) * 0.001;
 
     if (!isDragging) {
@@ -2449,7 +2611,19 @@ function initReachGlobe() {
     }
     frameHandle = requestAnimationFrame(tick);
   };
-  frameHandle = requestAnimationFrame(tick);
+  observeVisibility(
+    root,
+    () => {
+      running = true;
+      if (!frameHandle) frameHandle = requestAnimationFrame(tick);
+    },
+    () => {
+      running = false;
+      cancelAnimationFrame(frameHandle);
+      frameHandle = 0;
+    },
+    { rootMargin: "160px" }
+  );
 }
 
 function main() {
